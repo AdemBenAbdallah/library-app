@@ -1,0 +1,20 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "jest.runMode": "watch",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/docs": true,
+    "**/.next": true,
+    "**/.husky": true,
+    // "**/public": true,
+    ".editorconfig": true,
+    ".npmrc": true,
+    "next-env.d.ts": true,
+    "README.md": true,
+    "yarn.lock": true
+  }
+}
