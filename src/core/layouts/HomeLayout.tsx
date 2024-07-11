@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { ReactFC } from "~/types";
-import { HomeHeader } from "../components/Header/HomeHeader";
+import { Header } from "../components/Header";
 
 type Props = { title?: string };
 
@@ -11,10 +11,10 @@ const HomeLayout: ReactFC<Props> = ({ title, children }) => {
     <>
       <Head>
         <title>{title || "barber"}</title>
-        <link rel="icon" href="/images/logo.svg" />
+        <link rel="icon" href="/images/logo.png" />
       </Head>
       <>
-        <HomeHeader />
+        <Header />
         {children}
       </>
     </>

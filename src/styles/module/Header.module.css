@@ -27,7 +27,7 @@
 }
 
 .link:hover {
-  background-color: var(--mantine-color-lime-1);
+  border-bottom: 1px solid var(--mantine-color-brandy-8);
 }
 
 .subLink {

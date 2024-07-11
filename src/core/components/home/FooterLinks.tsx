@@ -9,7 +9,7 @@ const data = [
     title: "About",
     links: [
       { label: "Contact", link: Routes.ContactPage() },
-      { label: "Blog", link: Routes.BlogPage() },
+      { label: "Products", link: Routes.ProductsPage() },
       { label: "Support", link: Routes.ContactPage() },
     ],
   },

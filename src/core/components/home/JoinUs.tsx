@@ -1,7 +1,5 @@
 import useResponsive from "@/utils/useResponsive";
-import { Routes } from "@blitzjs/next";
 import { Box, Button, Center, Text, Title, rem } from "@mantine/core";
-import Link from "next/link";
 
 const JoinUs = () => {
   const { isMobile } = useResponsive();
@@ -36,8 +34,6 @@ const JoinUs = () => {
             w={{ base: "100%", sm: rem(326) }}
             h={{ base: rem(50), sm: rem(40) }}
             style={{ display: "block" }}
-            component={Link}
-            href={Routes.BlogPage()}
           >
             Rejoignez Notre Communauté
           </Button>

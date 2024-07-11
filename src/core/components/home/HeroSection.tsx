@@ -28,7 +28,7 @@ const HeroSection = () => {
               </Button>
               <Button
                 component={Link}
-                href={Routes.BlogPage()}
+                href={Routes.ProductsPage()}
                 fw={400}
                 bg={"white"}
                 c={"black"}

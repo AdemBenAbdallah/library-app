@@ -4,7 +4,6 @@ import {
   HeroSection,
   InfinityHScroll,
   JoinUs,
-  OurBlog,
   OurPost,
   OurPrograms,
   WhyChooseUs,
@@ -21,7 +20,6 @@ const Home: BlitzPage = () => {
       <WhyChooseUs />
       <OurPost />
       <FeaturesCards />
-      <OurBlog />
       <JoinUs />
       <FooterLinks />
     </HomeLayout>
