@@ -8,9 +8,10 @@ export default resolver.pipe(
   resolver.authorize(),
   async ({ where, orderBy, skip = 0, take = 100 }: GetProductsInput) => {
     const {
-      items: blogs,
-      hasMore,
-      nextPage,
+      items: products,
+      pageCount,
+      from,
+      to,
       count,
     } = await paginate({
       skip,
@@ -20,9 +21,10 @@ export default resolver.pipe(
     });
 
     return {
-      blogs,
-      nextPage,
-      hasMore,
+      products,
+      pageCount,
+      from,
+      to,
       count,
     };
   },

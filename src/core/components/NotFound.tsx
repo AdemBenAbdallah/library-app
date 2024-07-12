@@ -5,7 +5,7 @@ const NotFountd = ({ text }: { text: string }) => {
   return (
     <Center style={{ height: "calc(100vh - 17rem)" }}>
       <Stack align="center" gap={0}>
-        <IconFile size={100} stroke={0.7} color="lime" />
+        <IconFile size={100} stroke={0.7} color="brandy" />
         <Text c="gray">{text}</Text>
       </Stack>
     </Center>

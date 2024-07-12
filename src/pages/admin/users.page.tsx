@@ -1,16 +1,15 @@
 import { InputWithButton } from "@/core/components/InputWithButton";
 import NotFound from "@/core/components/NotFound";
 import RenderTable, { Column } from "@/core/components/RenderTable";
-import { StatsRing } from "@/core/components/StatsRing";
 import UserAvatar from "@/core/components/UserAvatar";
 import UserDetails from "@/core/components/UserDetails";
-import Layout from "@/core/layouts/Layout";
+import DashLayout from "@/core/layouts/DashLayout";
 import getUsersByAdmin from "@/features/users/queries/getUsersByAdmin";
 import { GlobalModal } from "@/modals";
 import { calculateAge } from "@/utils/utils";
 import { BlitzPage } from "@blitzjs/next";
 import { usePaginatedQuery } from "@blitzjs/rpc";
-import { Badge, Center, Drawer, Flex, Group, Loader, Select, Stack } from "@mantine/core";
+import { Badge, Center, Drawer, Group, Loader, Select, Stack } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { openContextModal } from "@mantine/modals";
 import { GenderType } from "@prisma/client";
@@ -66,13 +65,10 @@ const UsersPage: BlitzPage = () => {
         </Badge>
       ),
     },
+
     {
-      header: "Date de début d'abonnement",
-      accessor: (user: UserType) => dayjs(user.lastSubscription?.startDate).format("YYYY-MM-DD"),
-    },
-    {
-      header: "Date de fin d'abonnement",
-      accessor: (user: UserType) => dayjs(user.lastSubscription?.endDate).format("YYYY-MM-DD"),
+      header: "date d'adhésion",
+      accessor: (user: UserType) => dayjs(user.createdAt).format("YYYY-MM-DD"),
     },
     {
       header: "",
@@ -105,47 +101,44 @@ const UsersPage: BlitzPage = () => {
   ];
 
   return (
-    <Layout title="Users">
-      <Flex gap={20}>
-        <StatsRing />
-        <Stack flex={8} gap={30}>
-          <Group>
-            <InputWithButton defaultValue={search} onChange={(event) => setSearch(event.currentTarget.value)} w={400} />
-            <Select
-              w={120}
-              radius="xl"
-              size="md"
-              placeholder="Gender"
-              data={[
-                { value: "", label: "All" },
-                { value: "MALE", label: "Male" },
-                { value: "FEMALE", label: "Female" },
-              ]}
-              value={genderFilter ? genderFilter.value : null}
-              onChange={(_value, option: FilterGenderType) => setGenderFilter(option)}
-            />
-          </Group>
-          {users && (
-            <RenderTable
-              data={users}
-              columns={columns}
-              totalCount={count}
-              currentPage={page + 1}
-              onPageChange={(newPage: number) => router.push({ query: { page: newPage - 1 } })}
-              itemsPerPage={ITEMS_PER_PAGE}
-              from={from}
-              to={to}
-            />
-          )}
-          {!users && <NotFound text="Aucun utilisateur trouvé." />}
-        </Stack>
-      </Flex>
+    <DashLayout title="Users">
+      <Stack gap={30}>
+        <Group>
+          <InputWithButton defaultValue={search} onChange={(event) => setSearch(event.currentTarget.value)} w={400} />
+          <Select
+            w={120}
+            radius="xl"
+            size="md"
+            placeholder="Gender"
+            data={[
+              { value: "", label: "All" },
+              { value: "MALE", label: "Male" },
+              { value: "FEMALE", label: "Female" },
+            ]}
+            value={genderFilter ? genderFilter.value : null}
+            onChange={(_value, option: FilterGenderType) => setGenderFilter(option)}
+          />
+        </Group>
+        {users && (
+          <RenderTable
+            data={users}
+            columns={columns}
+            totalCount={count}
+            currentPage={page + 1}
+            onPageChange={(newPage: number) => router.push({ query: { page: newPage - 1 } })}
+            itemsPerPage={ITEMS_PER_PAGE}
+            from={from}
+            to={to}
+          />
+        )}
+        {!users && <NotFound text="Aucun utilisateur trouvé." />}
+      </Stack>
       <Drawer opened={opened} onClose={close}>
         <Suspense fallback={<Loader />}>
           <UserDetails userId={userId} />
         </Suspense>
       </Drawer>
-    </Layout>
+    </DashLayout>
   );
 };
 

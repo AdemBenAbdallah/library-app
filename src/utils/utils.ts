@@ -17,3 +17,18 @@ export const calculateAge = (birthdayDate: Date) => {
   }
   return age;
 };
+
+export const categoryNameFormat = (() => {
+  const cache: Record<string, string> = {};
+  return (category: string) => {
+    if (cache[category]) {
+      return cache[category];
+    }
+
+    const lowerCaseCategory = category.toLowerCase().split("_").join(" ");
+    const formattedCategory = lowerCaseCategory.charAt(0).toUpperCase() + lowerCaseCategory.slice(1);
+
+    cache[category] = formattedCategory;
+    return formattedCategory;
+  };
+})();

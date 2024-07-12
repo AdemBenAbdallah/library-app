@@ -1,7 +1,7 @@
 import { BookCategory } from "@prisma/client";
 import { PromiseReturnType } from "blitz";
 import { z } from "zod";
-import getProducts from "./queries/getProducts";
+import getProductsByAdmin from "./queries/getProductsByAdmin";
 
 const BaseProductSchema = z.object({
   title: z.string().min(3),
@@ -20,5 +20,5 @@ export const InputUpdateProduct = BaseProductSchema.extend({
 });
 
 export type InputAddProductType = z.infer<typeof InputAddProduct>;
-export type ProductsType = PromiseReturnType<typeof getProducts>;
-export type ProductType = ProductsType["blogs"][number];
+export type ProductsType = PromiseReturnType<typeof getProductsByAdmin>;
+export type ProductType = ProductsType["products"][number];
