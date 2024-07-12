@@ -5,14 +5,14 @@ import Head from "next/head";
 import { Suspense } from "react";
 import { ReactFC } from "~/types";
 import FullPageLoader from "../components/FulllPageLoader";
-import { Header } from "../components/Header";
+import { Navbar } from "../components/Navbar";
 import { RootErrorFallback } from "../components/RootErrorFallback";
 
 type Props = { title?: string };
 
 export const dynamic = "force-dynamic";
 
-const Layout: ReactFC<Props> = ({ title, children }) => {
+const DashLayout: ReactFC<Props> = ({ title, children }) => {
   const currentUser = useCurrentUser();
 
   return (
@@ -22,12 +22,12 @@ const Layout: ReactFC<Props> = ({ title, children }) => {
         <link rel="icon" href="/images/logo.png" />
       </Head>
 
-      <AppShell header={{ height: 60 }} padding="md" h={"100%"}>
-        <AppShell.Header>
-          <Header />
-        </AppShell.Header>
+      <AppShell padding="md" h={"100%"}>
+        <AppShell.Navbar>
+          <Navbar />
+        </AppShell.Navbar>
 
-        <AppShell.Main h={"100%"}>
+        <AppShell.Main ml={300} h={"100%"}>
           <Stack h={"100%"}>
             <ErrorBoundary resetKeys={[currentUser]} FallbackComponent={RootErrorFallback}>
               <Suspense fallback={<FullPageLoader />}>{children}</Suspense>
@@ -39,4 +39,4 @@ const Layout: ReactFC<Props> = ({ title, children }) => {
   );
 };
 
-export default Layout;
+export default DashLayout;
