@@ -39,6 +39,21 @@ model User {
   blogs          Blog[]
 }
 
+model Product {
+  id           String    @id @default(uuid())
+  title        String
+  description  String
+  language     String
+  productImageKey String
+  price        Float
+  author       String?
+  isbn         String?
+  category     BookCategory
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
 model Subscription {
   id               String    @id @default(uuid())
   startDate        DateTime
@@ -108,4 +123,18 @@ enum RoleType {
 enum GenderType {
   MALE
   FEMALE
+}
+
+enum BookCategory {
+  FICTION
+  NON_FICTION
+  FANTASY
+  SCIENCE_FICTION
+  MYSTERY
+  ROMANCE
+  HISTORY
+  BIOGRAPHY
+  SELF_HELP
+  CHILDREN
+  OTHER
 }

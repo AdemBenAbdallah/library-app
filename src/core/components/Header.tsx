@@ -19,6 +19,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconShoppingCart, IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import UserHeaderMenu from "./Header/UserHeaderMenu";
 
 export function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -83,6 +84,7 @@ export function Header() {
                     <IconUserPlus />
                   </Tooltip>
                 )}
+                <UserHeaderMenu />
               </Group>
             )}
             <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
