@@ -1,12 +1,20 @@
 import { ImageCard } from "@/core/components/ImageCard";
 import Layout from "@/core/layouts/Layout";
-import { useStringParam } from "@/utils/utils";
+import getProductById from "@/features/products/queries/getProductById";
+import getRelatedProducts from "@/features/products/queries/getRelatedProducts";
+import { getUploadThingUrl } from "@/utils/image-utils";
+import { categoryNameFormat, useStringParam } from "@/utils/utils";
 import { BlitzPage, Routes } from "@blitzjs/next";
+import { useQuery } from "@blitzjs/rpc";
 import { Button, Group, Image, NumberInput, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
 
 const ProductDetails: BlitzPage = () => {
   const id = useStringParam("id");
+  const [product] = useQuery(getProductById, { id: id as string });
+  const [getProducts] = useQuery(getRelatedProducts, {
+    category: product?.category || "OTHER",
+  });
 
   return (
     <Layout title="Product Details">
@@ -15,7 +23,8 @@ const ProductDetails: BlitzPage = () => {
           <Stack flex={1} bg={"red"} style={{ borderRadius: 10 }}>
             <Image
               miw={300}
-              src={"https://miro.medium.com/v2/resize:fit:858/1*65CugInou11llUdnq7KBgw.png"}
+              mah={500}
+              src={getUploadThingUrl(product?.productImageKey)}
               w={"100%"}
               h={"100%"}
               style={{ borderRadius: 10 }}
@@ -23,24 +32,22 @@ const ProductDetails: BlitzPage = () => {
           </Stack>
           <Stack flex={1} justify="space-between" h={{ base: "auto", md: "100%" }}>
             <Stack gap={0}>
-              <Title>The 12 week year</Title>
+              <Title>{product?.title}</Title>
               <Text span c={"brandy"} fz={"sm"}>
-                Mouhammed ali
+                {product?.author}
               </Text>
             </Stack>
             <Group gap={6}>
               <Text fw={500}> Description:</Text>
-              <Text c={"dimmed"}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia aut consequatur quos. Voluptatum porro
-                ab, molestias animi deserunt reiciendis obcaecati veritatis dolore in.
+              <Text c={"dimmed"} lineClamp={4}>
+                {product?.description}
               </Text>
             </Group>
 
             <Stack gap={6}>
-              <Text fw={500}> Categories:</Text>
+              <Text fw={500}> Category:</Text>
               <Group>
-                <Button variant={"outline"}>Finiace</Button>
-                <Button variant={"outline"}>Productivity</Button>
+                <Button variant={"outline"}>{categoryNameFormat(product?.category || "")}</Button>
               </Group>
             </Stack>
 
@@ -48,7 +55,7 @@ const ProductDetails: BlitzPage = () => {
               <Group>
                 <Text fw={500}>Prix:</Text>
                 <Text span c={"dimmed"} fz={"sm"}>
-                  20.000 DT
+                  {product?.price} DT
                 </Text>
               </Group>
 
@@ -69,11 +76,7 @@ const ProductDetails: BlitzPage = () => {
             spacing={{ base: 10, sm: "xl" }}
             verticalSpacing={{ base: "md", sm: "xl" }}
           >
-            {Array(6)
-              .fill(null)
-              .map((_, index) => (
-                <ImageCard key={index} />
-              ))}
+            {getProducts?.map((product) => <ImageCard key={product.id} product={product} />)}
           </SimpleGrid>
         </Stack>
       </Stack>

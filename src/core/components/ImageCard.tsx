@@ -1,10 +1,13 @@
+import { ProductType } from "@/features/products/schema";
 import classes from "@/styles/module/ImageCard.module.css";
+import { getUploadThingUrl } from "@/utils/image-utils";
+import { categoryNameFormat } from "@/utils/utils";
 import { Routes } from "@blitzjs/next";
 import { Card, Center, Group, Text, rem, useMantineTheme } from "@mantine/core";
 import { IconEye, IconMessageCircle } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 
-export function ImageCard() {
+export function ImageCard({ product }: { product: ProductType }) {
   const theme = useMantineTheme();
   const router = useRouter();
 
@@ -14,12 +17,12 @@ export function ImageCard() {
       shadow="lg"
       className={classes.card}
       radius="md"
-      onClick={() => router.push(Routes.ProductDetails({ id: 1 }))}
+      onClick={() => router.push(Routes.ProductDetails({ id: product.id }))}
     >
       <div
         className={classes.image}
         style={{
-          backgroundImage: "url(https://miro.medium.com/v2/resize:fit:858/1*65CugInou11llUdnq7KBgw.png)",
+          backgroundImage: `url(${getUploadThingUrl(product?.productImageKey)})`,
         }}
       />
       <div className={classes.overlay} />
@@ -27,19 +30,19 @@ export function ImageCard() {
       <div className={classes.content}>
         <div>
           <Text size="lg" className={classes.title} fw={500}>
-            Journey to Swiss Alps
+            {product.title}
           </Text>
 
           <Group justify="space-between" gap="xs">
             <Text size="sm" className={classes.author}>
-              Robert Gluesticker
+              {categoryNameFormat(product.category)}
             </Text>
 
             <Group gap="lg">
               <Center>
                 <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} color={theme.colors.dark[2]} />
                 <Text size="sm" className={classes.bodyText}>
-                  7847
+                  {product.price}
                 </Text>
               </Center>
               <Center>
@@ -48,8 +51,8 @@ export function ImageCard() {
                   stroke={1.5}
                   color={theme.colors.dark[2]}
                 />
-                <Text size="sm" className={classes.bodyText}>
-                  5
+                <Text size="sm" className={classes.bodyText} w={100} lineClamp={1}>
+                  {product.author}
                 </Text>
               </Center>
             </Group>
