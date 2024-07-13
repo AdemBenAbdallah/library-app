@@ -1,7 +1,9 @@
+import NotFountd from "@/core/components/NotFound";
 import Layout from "@/core/layouts/Layout";
 import deleteCartItem from "@/features/carts/mutations/deleteCartItem";
 import getCart from "@/features/carts/queries/getCart";
 import { CartItemsType } from "@/features/carts/schema";
+import addOrder from "@/features/orders/mutations/addOrder";
 import DeleteModal from "@/modals/components/DeleteModal";
 import { getUploadThingUrl } from "@/utils/image-utils";
 import { BlitzPage } from "@blitzjs/next";
@@ -10,26 +12,27 @@ import { Avatar, Button, Group, NumberInput, Stack, Table, Text, Title } from "@
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { CartItem } from "@prisma/client";
-import { IconTrash } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { IconCheck, IconTrash } from "@tabler/icons-react";
+import { useEffect, useMemo, useState } from "react";
 
+type OrderProductType = { id: string; title: string; price: number; quantity: number };
 const CartTable = ({
   items,
   setOrderProducts,
 }: {
   items: CartItemsType;
-  setOrderProducts: (value: React.SetStateAction<{ id: string; title: string; totalPrice: number }[] | null>) => void;
+  setOrderProducts: (value: React.SetStateAction<OrderProductType[] | null>) => void;
 }) => {
   const [openedDelete, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [selectCartItem, setSelectCartItem] = useState<CartItem | null>(null);
   const [$deleteCartItem, { isLoading }] = useMutation(deleteCartItem, {});
 
-  const updateQuantity = (id: string, totalPrice: number) => {
+  const updateQuantity = (value: number | string, id: string, price: number) => {
     setOrderProducts((prev) => {
       if (!prev) return null;
       return prev.map((cartItem) => {
         if (cartItem.id === id) {
-          return { ...cartItem, totalPrice: totalPrice };
+          return { ...cartItem, quantity: Number(value), price: price * Number(value) };
         }
         return cartItem;
       });
@@ -47,7 +50,7 @@ const CartTable = ({
       <Table.Td>{item.product.price} DT</Table.Td>
       <Table.Td>
         <NumberInput
-          onChange={(value) => updateQuantity(item.product.id, item.product.price * Number(value))}
+          onChange={(value) => updateQuantity(value, item.product.id, item.product.price)}
           defaultValue={item.quantity}
           w={100}
           min={1}
@@ -100,13 +103,9 @@ const CartTable = ({
   );
 };
 
-const CartSummary = ({
-  orderProducts,
-}: {
-  orderProducts: { id: string; title: string; totalPrice: number }[] | null;
-}) => {
-  const total = useMemo(() => orderProducts?.reduce((acc, item) => acc + item.totalPrice, 0), [orderProducts]);
-
+const CartSummary = ({ orderProducts }: { orderProducts: OrderProductType[] | null }) => {
+  const total = useMemo(() => orderProducts?.reduce((acc, item) => acc + item.price, 0), [orderProducts]);
+  const [$addOrder] = useMutation(addOrder, {});
   return (
     <Stack c="white" p={20} flex={2} bg="black" style={{ borderRadius: 8 }}>
       <Text fw={500}>Shopping Cart</Text>
@@ -115,7 +114,7 @@ const CartSummary = ({
           {orderProducts?.map((item) => (
             <Group key={item.id} justify="space-between">
               <Text>{item.title}</Text>
-              <Text>{item.totalPrice} DT</Text>
+              <Text>{item.price} DT</Text>
             </Group>
           ))}
         </Stack>
@@ -126,7 +125,22 @@ const CartSummary = ({
               {total} DT
             </Text>
           </Group>
-          <Button size="sm" w="100%" bg="white" c="black">
+          <Button
+            onClick={async () => {
+              if (!orderProducts || !total) return;
+              await $addOrder({ orderProducts, totalPrice: total });
+              showNotification({
+                title: "Success",
+                message: "Commande effectue avec succes",
+                color: "green",
+                icon: <IconCheck size={16} />,
+              });
+            }}
+            size="sm"
+            w="100%"
+            bg="white"
+            c="black"
+          >
             Checkout
           </Button>
         </Stack>
@@ -137,23 +151,34 @@ const CartSummary = ({
 
 const CartPage: BlitzPage = () => {
   const [cartItems] = useQuery(getCart, {});
-  const [orderProducts, setOrderProducts] = useState<{ id: string; title: string; totalPrice: number }[] | null>(
-    cartItems?.map((item) => ({
-      id: item.product.id,
-      title: item.product.title,
-      totalPrice: item.product.price * item.quantity,
-    })) ?? null,
-  );
+  const [orderProducts, setOrderProducts] = useState<OrderProductType[] | null>(null);
+
+  useEffect(() => {
+    if (cartItems && cartItems?.length !== 0) {
+      const newOrderProducts = cartItems?.map((item) => ({
+        id: item.product.id,
+        title: item.product.title,
+        price: item.product.price * item.quantity,
+        quantity: item.quantity,
+      }));
+      setOrderProducts(newOrderProducts);
+    }
+  }, [cartItems]);
+
+  const isVide = cartItems?.length === 0;
   return (
     <Layout title="Cart">
       <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
         <Title>Shopping Cart</Title>
-        <Group w="100%" align="start" gap={50}>
-          <Stack flex={7}>
-            <CartTable items={cartItems} setOrderProducts={setOrderProducts} />
-          </Stack>
-          <CartSummary orderProducts={orderProducts} />
-        </Group>
+        {isVide && <NotFountd text="Votre panier est vide" />}
+        {!isVide && (
+          <Group w="100%" align="start" gap={50}>
+            <Stack flex={7}>
+              <CartTable items={cartItems} setOrderProducts={setOrderProducts} />
+            </Stack>
+            <CartSummary orderProducts={orderProducts} />
+          </Group>
+        )}
       </Stack>
     </Layout>
   );
