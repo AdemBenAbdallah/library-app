@@ -9,7 +9,7 @@ const data = [
   { link: Routes.DashboardPage(), value: "Dashboard", label: "Dashboard", icon: IconGauge },
   { link: Routes.AdminProducts(), value: "Products", label: "Books", icon: IconBook2 },
   { link: Routes.UsersPage(), value: "Users", label: "Users", icon: IconUsers },
-  { link: "", value: "Orders", label: "Orders", icon: IconMenuOrder },
+  { link: Routes.AdminOrders(), value: "Orders", label: "Orders", icon: IconMenuOrder },
   { link: "", value: "Commercial", label: "Commercial", icon: IconShip },
 ];
 
