@@ -1,20 +1,26 @@
 import { ImageCard } from "@/core/components/ImageCard";
 import Layout from "@/core/layouts/Layout";
+import addToCart from "@/features/carts/mutations/addToCart";
 import getProductById from "@/features/products/queries/getProductById";
 import getRelatedProducts from "@/features/products/queries/getRelatedProducts";
 import { getUploadThingUrl } from "@/utils/image-utils";
 import { categoryNameFormat, useStringParam } from "@/utils/utils";
 import { BlitzPage, Routes } from "@blitzjs/next";
-import { useQuery } from "@blitzjs/rpc";
+import { useMutation, useQuery } from "@blitzjs/rpc";
 import { Button, Group, Image, NumberInput, SimpleGrid, Stack, Text, Title } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
+import { useState } from "react";
 
 const ProductDetails: BlitzPage = () => {
   const id = useStringParam("id");
   const [product] = useQuery(getProductById, { id: id as string });
+  const [quantity, setQuantity] = useState<number | string>(1);
   const [getProducts] = useQuery(getRelatedProducts, {
     category: product?.category || "OTHER",
   });
+
+  const [$addToCart] = useMutation(addToCart, {});
 
   return (
     <Layout title="Product Details">
@@ -59,10 +65,33 @@ const ProductDetails: BlitzPage = () => {
                 </Text>
               </Group>
 
-              <NumberInput w={100} defaultValue={1} min={1} allowNegative={false} />
+              <NumberInput
+                value={quantity}
+                onChange={(value) => setQuantity(value)}
+                w={100}
+                defaultValue={1}
+                min={1}
+                allowNegative={false}
+              />
             </Stack>
 
-            <Button bg={"black"} w={"100%"}>
+            <Button
+              onClick={async () => {
+                $addToCart({
+                  productId: product?.id || "",
+                  quantity: Number(quantity),
+                });
+                showNotification({
+                  title: "Product added to cart",
+                  message: "Product added to cart successfully",
+                  color: "green",
+                  autoClose: 3000,
+                });
+                setQuantity(1);
+              }}
+              bg={"black"}
+              w={"100%"}
+            >
               Add to cart
             </Button>
           </Stack>
@@ -76,7 +105,7 @@ const ProductDetails: BlitzPage = () => {
             spacing={{ base: 10, sm: "xl" }}
             verticalSpacing={{ base: "md", sm: "xl" }}
           >
-            {getProducts?.map((product) => <ImageCard key={product.id} product={product} />)}
+            {getProducts?.map((product, idx) => <ImageCard key={idx} product={product} />)}
           </SimpleGrid>
         </Stack>
       </Stack>

@@ -16,5 +16,8 @@
     "next-env.d.ts": true,
     "README.md": true,
     "yarn.lock": true
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
   }
 }

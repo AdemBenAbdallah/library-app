@@ -1,6 +1,8 @@
+import getCartTotalQuatity from "@/features/carts/queries/getCartTotalQuatity";
 import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
 import classes from "@/styles/module/Header.module.css";
 import { Routes } from "@blitzjs/next";
+import { useQuery } from "@blitzjs/rpc";
 import {
   Box,
   Burger,
@@ -26,6 +28,7 @@ export function Header() {
   const router = useRouter();
   const theme = useMantineTheme();
   const currentUser = useCurrentUser();
+  const [totalQuantity] = useQuery(getCartTotalQuatity, {}, { refetchOnWindowFocus: false });
 
   return (
     <Box>
@@ -68,7 +71,7 @@ export function Header() {
                 <Link href={Routes.CartPage()} style={{ cursor: "pointer" }}>
                   <Indicator
                     fw={500}
-                    label="2"
+                    label={totalQuantity}
                     inline
                     size={20}
                     offset={7}

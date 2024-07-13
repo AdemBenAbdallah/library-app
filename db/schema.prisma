@@ -19,39 +19,68 @@ model User {
   name              String?
   email             String    @unique
   hashedPassword    String?
-  role              RoleType    @default(USER)
+  role              RoleType  @default(USER)
   emailVerification DateTime?
 
   birthdayDate   DateTime
   gender         GenderType
   avatarImageKey String?
   coverImageKey  String?
-  username       String? @unique
+  username       String?    @unique
   bio            String?
-  onboarded      Boolean @default(true)
+  onboarded      Boolean    @default(true)
 
   settingsEmailMarketing Boolean @default(true)
   settingsEmailProduct   Boolean @default(true)
 
-  tokens   Token[]
-  sessions Session[]
-  subscriptions  Subscription[]
-  blogs          Blog[]
+  tokens        Token[]
+  sessions      Session[]
+  subscriptions Subscription[]
+  blogs         Blog[]
+
+  cart Cart?
 }
 
 model Product {
-  id           String    @id @default(uuid())
-  title        String
-  description  String
-  language     String
+  id              String       @id @default(uuid())
+  title           String
+  description     String
+  language        String
   productImageKey String
-  price        Float
-  author       String?
-  isbn         String?
-  category     BookCategory
+  price           Float
+  author          String?
+  isbn            String?
+  category        BookCategory
 
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  cartItems CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id       String @id @default(uuid())
+  quantity Int
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String
+
+  @@unique([cartId, productId])
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items CartItem[]
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  @@unique([userId])
 }
 
 model Subscription {
@@ -59,24 +88,24 @@ model Subscription {
   startDate        DateTime
   endDate          DateTime?
   subscriptionCost Float
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  user             User?            @relation(fields: [userId], references: [id])
-  userId           String?
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
 }
 
 model Blog {
-  id             String    @id @default(uuid())
-  title          String
-  blogImageKey   String?
-  category       String?
-  content        String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id           String   @id @default(uuid())
+  title        String
+  blogImageKey String?
+  category     String?
+  content      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  author         User?            @relation(fields: [authorId], references: [id])
-  authorId       String?
+  author   User?   @relation(fields: [authorId], references: [id])
+  authorId String?
 }
 
 model Session {

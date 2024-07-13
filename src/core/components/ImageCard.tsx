@@ -17,6 +17,7 @@ export function ImageCard({ product }: { product: ProductType }) {
       shadow="lg"
       className={classes.card}
       radius="md"
+      style={{ cursor: "pointer" }}
       onClick={() => router.push(Routes.ProductDetails({ id: product.id }))}
     >
       <div
