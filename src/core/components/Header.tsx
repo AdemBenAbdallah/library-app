@@ -1,8 +1,9 @@
+import logout from "@/features/auth/mutations/logout";
 import getCartTotalQuatity from "@/features/carts/queries/getCartTotalQuatity";
 import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
 import classes from "@/styles/module/Header.module.css";
 import { Routes } from "@blitzjs/next";
-import { useQuery } from "@blitzjs/rpc";
+import { useMutation, useQuery } from "@blitzjs/rpc";
 import {
   Box,
   Burger,
@@ -13,15 +14,15 @@ import {
   Image,
   Indicator,
   ScrollArea,
+  ThemeIcon,
   Tooltip,
   rem,
   useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconShoppingCart, IconUserPlus } from "@tabler/icons-react";
+import { IconLogout, IconShoppingCart, IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import UserHeaderMenu from "./Header/UserHeaderMenu";
 
 export function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -29,6 +30,7 @@ export function Header() {
   const theme = useMantineTheme();
   const currentUser = useCurrentUser();
   const [totalQuantity] = useQuery(getCartTotalQuatity, {}, { refetchOnWindowFocus: false });
+  const [$logoutMutation] = useMutation(logout);
 
   return (
     <Box>
@@ -83,11 +85,26 @@ export function Header() {
                   </Indicator>
                 </Link>
                 {currentUser.role === "ADMIN" && (
-                  <Tooltip label="ADMIN">
+                  <Tooltip
+                    label="ADMIN"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => router.push(Routes.DashboardPage())}
+                  >
                     <IconUserPlus />
                   </Tooltip>
                 )}
-                <UserHeaderMenu />
+
+                <ThemeIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={async () => {
+                    await $logoutMutation();
+                    await router.push("/");
+                  }}
+                  color="orange"
+                  variant="light"
+                >
+                  <IconLogout size={20} />
+                </ThemeIcon>
               </Group>
             )}
             <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />

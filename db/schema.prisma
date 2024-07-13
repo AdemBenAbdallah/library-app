@@ -39,7 +39,7 @@ model User {
   blogs         Blog[]
 
   cart  Cart?
-  order Order?
+  order Order[]
 }
 
 model Product {
@@ -109,8 +109,6 @@ model Order {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([userId])
 }
 
 model Subscription {

@@ -1,7 +1,6 @@
 import FullPageLoader from "@/core/components/FulllPageLoader";
 import { globalModals } from "@/modals";
 import { theme } from "@/styles/mantine-theme";
-import { CartProvider } from "@/utils/CartContext";
 import { AppProps, ErrorBoundary } from "@blitzjs/next";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
@@ -22,9 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ModalsProvider modals={globalModals}>
         <ErrorBoundary FallbackComponent={RootErrorFallback}>
           <Suspense fallback={<FullPageLoader />}>
-            <CartProvider>
-              <Component {...pageProps} />
-            </CartProvider>
+            <Component {...pageProps} />
           </Suspense>
         </ErrorBoundary>
       </ModalsProvider>

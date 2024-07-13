@@ -18,7 +18,7 @@ const Layout: ReactFC<Props> = ({ title, children }) => {
   return (
     <>
       <Head>
-        <title>{title || "Ketabi"}</title>
+        <title>{"ketabi | " + title || "Ketabi"}</title>
         <link rel="icon" href="/images/logo.png" />
       </Head>
 
