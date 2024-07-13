@@ -1,41 +1,80 @@
 import Layout from "@/core/layouts/Layout";
+import deleteCartItem from "@/features/carts/mutations/deleteCartItem";
+import getCart from "@/features/carts/queries/getCart";
+import { CartItemsType } from "@/features/carts/schema";
+import DeleteModal from "@/modals/components/DeleteModal";
+import { getUploadThingUrl } from "@/utils/image-utils";
 import { BlitzPage } from "@blitzjs/next";
+import { useMutation, useQuery } from "@blitzjs/rpc";
 import { Avatar, Button, Group, NumberInput, Stack, Table, Text, Title } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
+import { CartItem } from "@prisma/client";
 import { IconTrash } from "@tabler/icons-react";
+import { useState } from "react";
 
-const CartTable = ({ items }) => {
-  const rows = items.map((item) => (
+const CartTable = ({ items }: { items: CartItemsType }) => {
+  const [openedDelete, { open: openDelete, close: closeDelete }] = useDisclosure(false);
+  const [selectCartItem, setSelectCartItem] = useState<CartItem | null>(null);
+  const [$deleteCartItem, { isLoading }] = useMutation(deleteCartItem, {});
+
+  const rows = items?.map((item) => (
     <Table.Tr key={item.id}>
       <Table.Td>
         <Group>
-          <Avatar src={item.avatar} size={50} radius="md" />
-          <Text visibleFrom="sm">{item.title}</Text>
+          <Avatar src={getUploadThingUrl(item.product.productImageKey)} size={50} radius="md" />
+          <Text visibleFrom="sm">{item.product.title}</Text>
         </Group>
       </Table.Td>
-      <Table.Td visibleFrom="sm">{item.author}</Table.Td>
-      <Table.Td>{item.price} DT</Table.Td>
+      <Table.Td visibleFrom="sm">{item.product.author}</Table.Td>
+      <Table.Td>{item.product.price} DT</Table.Td>
       <Table.Td>
         <NumberInput w={100} defaultValue={item.quantity} min={1} />
       </Table.Td>
       <Table.Td style={{ cursor: "pointer" }}>
-        <IconTrash size={20} stroke={1} />
+        <IconTrash
+          onClick={() => {
+            setSelectCartItem(item);
+            openDelete();
+          }}
+          size={20}
+          stroke={1}
+        />
       </Table.Td>
     </Table.Tr>
   ));
 
   return (
-    <Table stickyHeader stickyHeaderOffset={60}>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Book</Table.Th>
-          <Table.Th visibleFrom="sm">Author</Table.Th>
-          <Table.Th>Price</Table.Th>
-          <Table.Th>Quantity</Table.Th>
-          <Table.Th>Action</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>{rows}</Table.Tbody>
-    </Table>
+    <>
+      <Table stickyHeader stickyHeaderOffset={60}>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Book</Table.Th>
+            <Table.Th visibleFrom="sm">Author</Table.Th>
+            <Table.Th>Price</Table.Th>
+            <Table.Th>Quantity</Table.Th>
+            <Table.Th>Action</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>{rows}</Table.Tbody>
+      </Table>
+      <DeleteModal
+        text="Voulez-vous vraiment supprimer ce produit ?"
+        opened={openedDelete}
+        close={closeDelete}
+        loading={isLoading}
+        onDelete={async () => {
+          await $deleteCartItem({ cartItemId: selectCartItem!.id });
+          showNotification({
+            title: "Success",
+            message: "Produit supprime avec succes",
+            color: "green",
+            icon: <IconTrash size={16} />,
+          });
+          closeDelete();
+        }}
+      />
+    </>
   );
 };
 
@@ -73,18 +112,9 @@ const CartSummary = ({ subtotal, total }) => (
 );
 
 const CartPage: BlitzPage = () => {
-  const cartItems = [
-    {
-      id: 1,
-      avatar: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-      title: "The 12 Week Year",
-      author: "Mohammed Ali",
-      price: 20.0,
-      quantity: 1,
-    },
-  ];
+  const [cartItems] = useQuery(getCart, {});
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = cartItems?.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const total = subtotal;
 
   return (
