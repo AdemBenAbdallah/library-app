@@ -5,14 +5,32 @@ import DashLayout from "@/core/layouts/DashLayout";
 import getOrdersByAdmin from "@/features/orders/queries/getOrdersByAdmin";
 import { BlitzPage } from "@blitzjs/next";
 import { usePaginatedQuery } from "@blitzjs/rpc";
-import { Group, Stack, Text } from "@mantine/core";
+import { Badge, Group, Select, Stack, Text } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
+import { OrderStatus } from "@prisma/client";
+import { IconEdit } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const ITEMS_PER_PAGE = 10;
+export const statusColor = (status: OrderStatus) => {
+  switch (status) {
+    case "CREATED":
+      return "yellow";
+    case "PROCESSING":
+      return "green";
+    case "DELIVERED":
+      return "red";
+    case "SHIPPED":
+      return "blue";
+    default:
+      return "gray";
+  }
+};
 const AdminOrders: BlitzPage = () => {
   const [search, setSearch] = useDebouncedState("", 200);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | null>(null);
 
   const router = useRouter();
   const page = Number(router.query.page) || 0;
@@ -20,6 +38,7 @@ const AdminOrders: BlitzPage = () => {
     orderBy: { id: "asc" },
     where: {
       user: { name: search ? { contains: search, mode: "insensitive" } : undefined },
+      status: statusFilter || undefined,
     },
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
@@ -42,11 +61,23 @@ const AdminOrders: BlitzPage = () => {
     },
     {
       header: "Status",
-      accessor: (order: OrderType) => <Text>{order.status}</Text>,
+      accessor: (order: OrderType) => (
+        <Badge size="md" variant="gradient" gradient={{ from: "gray", to: statusColor(order.status), deg: 90 }}>
+          {order.status}
+        </Badge>
+      ),
     },
     {
       header: "Date",
       accessor: (order: OrderType) => <Text>{dayjs(order.createdAt).format("DD/MM/YYYY")}</Text>,
+    },
+    {
+      header: "",
+      accessor: () => (
+        <Group>
+          <IconEdit stroke={1} onClick={() => {}} style={{ cursor: "pointer" }} size={25} />
+        </Group>
+      ),
     },
   ];
   return (
@@ -55,6 +86,15 @@ const AdminOrders: BlitzPage = () => {
         <Group justify="space-between">
           <Group>
             <InputWithButton defaultValue={search} onChange={(event) => setSearch(event.currentTarget.value)} w={400} />
+            <Select
+              w={250}
+              radius="xl"
+              size="md"
+              placeholder="Status"
+              data={Object.keys(OrderStatus)}
+              value={statusFilter}
+              onChange={(_value: OrderStatus) => setStatusFilter(_value)}
+            />
           </Group>
         </Group>
         <RenderTable

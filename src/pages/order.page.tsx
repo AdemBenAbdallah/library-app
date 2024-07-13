@@ -5,6 +5,7 @@ import { BlitzPage } from "@blitzjs/next";
 import { useQuery } from "@blitzjs/rpc";
 import { Badge, Group, Stack, Table, Title } from "@mantine/core";
 import dayjs from "dayjs";
+import { statusColor } from "./admin/orders.page";
 
 const OrderTable = ({ items }: { items: OrdersType }) => {
   const rows = items.map((item) => (
@@ -13,7 +14,7 @@ const OrderTable = ({ items }: { items: OrdersType }) => {
       <Table.Td>{item.totalPrice} DT</Table.Td>
       <Table.Td>{item.totalQuantities}</Table.Td>
       <Table.Td>
-        <Badge size="md" variant="gradient" gradient={{ from: "gray", to: "yellow", deg: 90 }}>
+        <Badge size="md" variant="gradient" gradient={{ from: "gray", to: statusColor(item.status), deg: 90 }}>
           {item.status}
         </Badge>
       </Table.Td>
@@ -37,7 +38,7 @@ const OrderTable = ({ items }: { items: OrdersType }) => {
 
 const OrderPage: BlitzPage = () => {
   const [orders] = useQuery(getOrders, {});
-  console.log(orders);
+
   return (
     <Layout title="Order">
       <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">

@@ -30,7 +30,13 @@ export function Navbar() {
     <nav className={classes.navbar}>
       <div className={classes.navbarMain}>
         <Group className={classes.header} justify="space-between">
-          <Image style={{ borderRadius: theme.radius.md }} src="/images/logo.png" w={100} h={50} />
+          <Image
+            onClick={() => router.push("/")}
+            style={{ cursor: "pointer", borderRadius: theme.radius.md }}
+            src="/images/logo.png"
+            w={100}
+            h={50}
+          />
         </Group>
         {links}
       </div>
