@@ -11,13 +11,30 @@ import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { CartItem } from "@prisma/client";
 import { IconTrash } from "@tabler/icons-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-const CartTable = ({ items }: { items: CartItemsType }) => {
+const CartTable = ({
+  items,
+  setOrderProducts,
+}: {
+  items: CartItemsType;
+  setOrderProducts: (value: React.SetStateAction<{ id: string; title: string; totalPrice: number }[] | null>) => void;
+}) => {
   const [openedDelete, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [selectCartItem, setSelectCartItem] = useState<CartItem | null>(null);
   const [$deleteCartItem, { isLoading }] = useMutation(deleteCartItem, {});
 
+  const updateQuantity = (id: string, totalPrice: number) => {
+    setOrderProducts((prev) => {
+      if (!prev) return null;
+      return prev.map((cartItem) => {
+        if (cartItem.id === id) {
+          return { ...cartItem, totalPrice: totalPrice };
+        }
+        return cartItem;
+      });
+    });
+  };
   const rows = items?.map((item) => (
     <Table.Tr key={item.id}>
       <Table.Td>
@@ -29,7 +46,12 @@ const CartTable = ({ items }: { items: CartItemsType }) => {
       <Table.Td visibleFrom="sm">{item.product.author}</Table.Td>
       <Table.Td>{item.product.price} DT</Table.Td>
       <Table.Td>
-        <NumberInput w={100} defaultValue={item.quantity} min={1} />
+        <NumberInput
+          onChange={(value) => updateQuantity(item.product.id, item.product.price * Number(value))}
+          defaultValue={item.quantity}
+          w={100}
+          min={1}
+        />
       </Table.Td>
       <Table.Td style={{ cursor: "pointer" }}>
         <IconTrash
@@ -78,54 +100,59 @@ const CartTable = ({ items }: { items: CartItemsType }) => {
   );
 };
 
-const CartSummary = ({ subtotal, total }) => (
-  <Stack c="white" p={20} flex={2} bg="black" style={{ borderRadius: 8 }}>
-    <Text fw={500}>Shopping Cart</Text>
-    <Stack gap={50}>
-      <Stack>
-        <Group justify="space-between">
-          <Text>Subtotal</Text>
-          <Text span>{subtotal} DT</Text>
-        </Group>
-        <Group justify="space-between">
-          <Text>Subtotal</Text>
-          <Text span>{subtotal} DT</Text>
-        </Group>
-        <Group justify="space-between">
-          <Text>Subtotal</Text>
-          <Text span>{subtotal} DT</Text>
-        </Group>
-      </Stack>
-      <Stack>
-        <Group justify="space-between">
-          <Text fw={500}>Total</Text>
-          <Text fw={500} span>
-            {total} DT
-          </Text>
-        </Group>
-        <Button size="sm" w="100%" bg="white" c="black">
-          Checkout
-        </Button>
+const CartSummary = ({
+  orderProducts,
+}: {
+  orderProducts: { id: string; title: string; totalPrice: number }[] | null;
+}) => {
+  const total = useMemo(() => orderProducts?.reduce((acc, item) => acc + item.totalPrice, 0), [orderProducts]);
+
+  return (
+    <Stack c="white" p={20} flex={2} bg="black" style={{ borderRadius: 8 }}>
+      <Text fw={500}>Shopping Cart</Text>
+      <Stack gap={50}>
+        <Stack>
+          {orderProducts?.map((item) => (
+            <Group key={item.id} justify="space-between">
+              <Text>{item.title}</Text>
+              <Text>{item.totalPrice} DT</Text>
+            </Group>
+          ))}
+        </Stack>
+        <Stack>
+          <Group justify="space-between">
+            <Text fw={500}>Total</Text>
+            <Text fw={500} span>
+              {total} DT
+            </Text>
+          </Group>
+          <Button size="sm" w="100%" bg="white" c="black">
+            Checkout
+          </Button>
+        </Stack>
       </Stack>
     </Stack>
-  </Stack>
-);
+  );
+};
 
 const CartPage: BlitzPage = () => {
   const [cartItems] = useQuery(getCart, {});
-
-  const subtotal = cartItems?.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-  const total = subtotal;
-
+  const [orderProducts, setOrderProducts] = useState<{ id: string; title: string; totalPrice: number }[] | null>(
+    cartItems?.map((item) => ({
+      id: item.product.id,
+      title: item.product.title,
+      totalPrice: item.product.price * item.quantity,
+    })) ?? null,
+  );
   return (
     <Layout title="Cart">
       <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
         <Title>Shopping Cart</Title>
         <Group w="100%" align="start" gap={50}>
           <Stack flex={7}>
-            <CartTable items={cartItems} />
+            <CartTable items={cartItems} setOrderProducts={setOrderProducts} />
           </Stack>
-          <CartSummary subtotal={subtotal} total={total} />
+          <CartSummary orderProducts={orderProducts} />
         </Group>
       </Stack>
     </Layout>
