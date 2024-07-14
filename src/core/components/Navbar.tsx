@@ -1,7 +1,7 @@
 import classes from "@/styles/module/Navbar.module.css";
 import { Routes } from "@blitzjs/next";
 import { Group, Image, useMantineTheme } from "@mantine/core";
-import { IconBook2, IconGauge, IconLogout, IconMenuOrder, IconShip, IconUsers } from "@tabler/icons-react";
+import { IconBook2, IconGauge, IconLogout, IconMenuOrder, IconTruckDelivery, IconUsers } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -10,7 +10,7 @@ const data = [
   { link: Routes.AdminProducts(), value: "Products", label: "Books", icon: IconBook2 },
   { link: Routes.UsersPage(), value: "Users", label: "Users", icon: IconUsers },
   { link: Routes.AdminOrders(), value: "Orders", label: "Orders", icon: IconMenuOrder },
-  { link: "", value: "Commercial", label: "Commercial", icon: IconShip },
+  { link: Routes.LivreursPage(), value: "Livreurs", label: "Livreur", icon: IconTruckDelivery },
 ];
 
 export function Navbar() {

@@ -6,7 +6,7 @@ import { DateInput } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 
-export function CoachForm({ close }: { close: () => void }) {
+export function LivreurForm({ close }: { close: () => void }) {
   const [$signupAsAdmin, { isLoading }] = useMutation(signupAsAdmin);
 
   const form = useForm<SignupFormWtithoutTermsType>({

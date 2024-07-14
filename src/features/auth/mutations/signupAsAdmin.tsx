@@ -19,7 +19,7 @@ export default resolver.pipe(
         hashedPassword,
         gender,
         birthdayDate,
-        role: "COACH",
+        role: "LIVREUR",
         onboarded: false,
       },
       select: { id: true, name: true, email: true, role: true },
@@ -27,7 +27,7 @@ export default resolver.pipe(
 
     await sendEmail({
       to: user.email,
-      subject: "Welcome to hajem",
+      subject: "Welcome to ketabi",
       react: React.createElement(EmailTemplateWelcome, {
         props: { name: user.name },
       }),

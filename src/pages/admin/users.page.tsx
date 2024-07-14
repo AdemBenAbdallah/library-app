@@ -5,15 +5,13 @@ import UserAvatar from "@/core/components/UserAvatar";
 import UserDetails from "@/core/components/UserDetails";
 import DashLayout from "@/core/layouts/DashLayout";
 import getUsersByAdmin from "@/features/users/queries/getUsersByAdmin";
-import { GlobalModal } from "@/modals";
 import { calculateAge } from "@/utils/utils";
 import { BlitzPage } from "@blitzjs/next";
 import { usePaginatedQuery } from "@blitzjs/rpc";
 import { Badge, Center, Drawer, Group, Loader, Select, Stack } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
-import { openContextModal } from "@mantine/modals";
 import { GenderType } from "@prisma/client";
-import { IconEdit, IconEye, IconGenderFemale, IconGenderMale } from "@tabler/icons-react";
+import { IconEye, IconGenderFemale, IconGenderMale } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { Suspense, useState } from "react";
@@ -74,18 +72,6 @@ const UsersPage: BlitzPage = () => {
       header: "",
       accessor: (user: UserType) => (
         <Group>
-          <IconEdit
-            stroke={1}
-            onClick={() =>
-              openContextModal({
-                modal: GlobalModal.AddUserSubsctiption,
-                title: "Ajouter une nouvelle durée d'abonnement",
-                innerProps: { userId: user.id },
-              })
-            }
-            style={{ cursor: "pointer" }}
-            size={25}
-          />
           <IconEye
             onClick={() => {
               setUserId(user.id);
