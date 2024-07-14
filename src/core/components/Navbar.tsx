@@ -1,5 +1,7 @@
+import logout from "@/features/auth/mutations/logout";
 import classes from "@/styles/module/Navbar.module.css";
 import { Routes } from "@blitzjs/next";
+import { useMutation } from "@blitzjs/rpc";
 import { Group, Image, useMantineTheme } from "@mantine/core";
 import { IconBook2, IconGauge, IconLogout, IconMenuOrder, IconTruckDelivery, IconUsers } from "@tabler/icons-react";
 import Link from "next/link";
@@ -16,6 +18,7 @@ const data = [
 export function Navbar() {
   const theme = useMantineTheme();
   const router = useRouter();
+  const [$logoutMutation] = useMutation(logout);
   const active = router.pathname.split("/")[2]
     ? `${router.pathname.split("/")[2]?.[0]?.toUpperCase()}${router.pathname.split("/")[2]?.slice(1)}`
     : "Dashboard";
@@ -42,7 +45,14 @@ export function Navbar() {
       </div>
 
       <div className={classes.footer}>
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a
+          className={classes.link}
+          onClick={async (event) => {
+            event.preventDefault();
+            await $logoutMutation();
+            await router.push("/");
+          }}
+        >
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
         </a>
