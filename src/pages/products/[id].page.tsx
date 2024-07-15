@@ -3,6 +3,7 @@ import Layout from "@/core/layouts/Layout";
 import addToCart from "@/features/carts/mutations/addToCart";
 import getProductById from "@/features/products/queries/getProductById";
 import getRelatedProducts from "@/features/products/queries/getRelatedProducts";
+import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
 import { getUploadThingUrl } from "@/utils/image-utils";
 import { categoryNameFormat, useStringParam } from "@/utils/utils";
 import { BlitzPage, Routes } from "@blitzjs/next";
@@ -10,10 +11,13 @@ import { useMutation, useQuery } from "@blitzjs/rpc";
 import { Button, Group, Image, NumberInput, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const ProductDetails: BlitzPage = () => {
+  const currentUser = useCurrentUser();
   const id = useStringParam("id");
+  const router = useRouter();
   const [product] = useQuery(getProductById, { id: id as string });
   const [quantity, setQuantity] = useState<number | string>(1);
   const [getProducts] = useQuery(getRelatedProducts, {
@@ -22,6 +26,34 @@ const ProductDetails: BlitzPage = () => {
 
   const [$addToCart] = useMutation(addToCart, {});
 
+  const addProductToCart = async () => {
+    if (!product) return;
+    if (!currentUser) {
+      showNotification({
+        title: "Veuillez vous connecter d'abord",
+        message: "Pour accéder à cette fonctionnalité.",
+        color: "red",
+        autoClose: 2000,
+      });
+      setTimeout(() => {
+        router.push(Routes.AuthPage({ path: `/products/${product.id}` }));
+      }, 2000);
+      return;
+    }
+    if (currentUser) {
+      $addToCart({
+        productId: product?.id || "",
+        quantity: Number(quantity),
+      });
+      showNotification({
+        title: "Product added to cart",
+        message: "Product added to cart successfully",
+        color: "green",
+        autoClose: 3000,
+      });
+      setQuantity(1);
+    }
+  };
   return (
     <Layout title="Product Details">
       <Stack gap={100} pb={200}>
@@ -75,23 +107,7 @@ const ProductDetails: BlitzPage = () => {
               />
             </Stack>
 
-            <Button
-              onClick={async () => {
-                $addToCart({
-                  productId: product?.id || "",
-                  quantity: Number(quantity),
-                });
-                showNotification({
-                  title: "Product added to cart",
-                  message: "Product added to cart successfully",
-                  color: "green",
-                  autoClose: 3000,
-                });
-                setQuantity(1);
-              }}
-              bg={"black"}
-              w={"100%"}
-            >
+            <Button onClick={addProductToCart} bg={"black"} w={"100%"}>
               Add to cart
             </Button>
           </Stack>

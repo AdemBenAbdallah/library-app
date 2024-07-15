@@ -2,6 +2,7 @@ import logout from "@/features/auth/mutations/logout";
 import getCartTotalQuatity from "@/features/carts/queries/getCartTotalQuatity";
 import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
 import classes from "@/styles/module/Header.module.css";
+import { useSession } from "@blitzjs/auth";
 import { Routes } from "@blitzjs/next";
 import { useMutation, useQuery } from "@blitzjs/rpc";
 import {
@@ -14,7 +15,6 @@ import {
   Image,
   Indicator,
   ScrollArea,
-  ThemeIcon,
   Tooltip,
   rem,
   useMantineTheme,
@@ -22,15 +22,13 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconLogout, IconShoppingCart, IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 
 export function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const router = useRouter();
   const theme = useMantineTheme();
   const currentUser = useCurrentUser();
-  const [totalQuantity] = useQuery(getCartTotalQuatity, {}, { refetchOnWindowFocus: false });
-  const [$logoutMutation] = useMutation(logout);
 
   return (
     <Box>
@@ -42,10 +40,6 @@ export function Header() {
           <Group h="100%" gap={0} visibleFrom="sm">
             <Link href={Routes.Home()} className={classes.link}>
               Accueil
-            </Link>
-
-            <Link href={Routes.ContactPage()} className={classes.link}>
-              Contact
             </Link>
             <Link href={Routes.ProductsPage()} className={classes.link}>
               Products
@@ -61,52 +55,14 @@ export function Header() {
           <Group>
             {!currentUser && (
               <Group visibleFrom="sm">
-                <Button component={Link} href={Routes.Profile()} variant="default">
+                <Button component={Link} href={Routes.CartPage()} variant="default">
                   Connexion
                 </Button>
-                <Button onClick={() => router.push(Routes.ProductsPage())}>S'inscrire</Button>{" "}
+                <Button onClick={() => router.push(Routes.CartPage({ form: "register" }))}>S'inscrire</Button>{" "}
               </Group>
             )}
 
-            {currentUser && (
-              <Group>
-                <Link href={Routes.CartPage()} style={{ cursor: "pointer" }}>
-                  <Indicator
-                    fw={500}
-                    label={totalQuantity}
-                    inline
-                    size={20}
-                    offset={7}
-                    position="bottom-end"
-                    color="black"
-                    withBorder
-                  >
-                    <IconShoppingCart size={30} />
-                  </Indicator>
-                </Link>
-                {currentUser.role === "ADMIN" && (
-                  <Tooltip
-                    label="ADMIN"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => router.push(Routes.DashboardPage())}
-                  >
-                    <IconUserPlus />
-                  </Tooltip>
-                )}
-
-                <ThemeIcon
-                  style={{ cursor: "pointer" }}
-                  onClick={async () => {
-                    await $logoutMutation();
-                    await router.push("/");
-                  }}
-                  color="orange"
-                  variant="light"
-                >
-                  <IconLogout size={20} />
-                </ThemeIcon>
-              </Group>
-            )}
+            {currentUser && <CurrentUserExist router={router} />}
             <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
           </Group>
         </Group>
@@ -126,10 +82,6 @@ export function Header() {
 
           <Link href={Routes.Home()} className={classes.link}>
             Accueil
-          </Link>
-
-          <Link href={Routes.ContactPage()} className={classes.link}>
-            Contact
           </Link>
 
           <Link href={Routes.ProductsPage()} className={classes.link}>
@@ -162,3 +114,46 @@ export function Header() {
     </Box>
   );
 }
+
+const CurrentUserExist = ({ router }: { router: NextRouter }) => {
+  const [totalQuantity] = useQuery(getCartTotalQuatity, {}, { refetchOnWindowFocus: false });
+  const [$logoutMutation] = useMutation(logout);
+  const session = useSession();
+
+  return (
+    <Group>
+      <Link href={Routes.CartPage()} style={{ cursor: "pointer" }}>
+        <Indicator
+          fw={500}
+          label={totalQuantity}
+          inline
+          size={20}
+          offset={7}
+          position="bottom-end"
+          color="black"
+          withBorder
+        >
+          <IconShoppingCart size={30} />
+        </Indicator>
+      </Link>
+      {session.role === "ADMIN" && (
+        <Tooltip label="ADMIN" style={{ cursor: "pointer" }} onClick={() => router.push(Routes.DashboardPage())}>
+          <IconUserPlus />
+        </Tooltip>
+      )}
+
+      <Button
+        visibleFrom="sm"
+        variant="default"
+        leftSection={<IconLogout size={20} />}
+        onClick={async () => {
+          await $logoutMutation();
+          await router.push("/");
+        }}
+      >
+        {" "}
+        Se deconnecter
+      </Button>
+    </Group>
+  );
+};

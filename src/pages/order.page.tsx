@@ -1,6 +1,9 @@
+import { AuthenticationForm } from "@/core/components/MainAuthForm";
+import { Vertical } from "@/core/components/MantineLayout";
 import Layout from "@/core/layouts/Layout";
 import getOrders from "@/features/orders/queries/getOrders";
 import { OrdersType } from "@/features/orders/schema";
+import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
 import { BlitzPage } from "@blitzjs/next";
 import { useQuery } from "@blitzjs/rpc";
 import { Badge, Group, Stack, Table, Title } from "@mantine/core";
@@ -37,20 +40,32 @@ const OrderTable = ({ items }: { items: OrdersType }) => {
 };
 
 const OrderPage: BlitzPage = () => {
-  const [orders] = useQuery(getOrders, {});
+  const currentUser = useCurrentUser();
 
   return (
     <Layout title="Order">
-      <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
-        <Title>Orders</Title>
-        <Group w="100%" align="start" gap={50}>
-          <Stack flex={7}>
-            <OrderTable items={orders} />
-          </Stack>
-        </Group>
-      </Stack>
+      {currentUser && <OrderDetails />}
+      {!currentUser && (
+        <Vertical fullH align="center" justify="center">
+          <AuthenticationForm />
+        </Vertical>
+      )}
     </Layout>
   );
 };
 
+const OrderDetails = () => {
+  const [orders] = useQuery(getOrders, {});
+
+  return (
+    <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
+      <Title>Orders</Title>
+      <Group w="100%" align="start" gap={50}>
+        <Stack flex={7}>
+          <OrderTable items={orders} />
+        </Stack>
+      </Group>
+    </Stack>
+  );
+};
 export default OrderPage;

@@ -7,11 +7,7 @@ import Link from "next/link";
 const data = [
   {
     title: "About",
-    links: [
-      { label: "Contact", link: Routes.ContactPage() },
-      { label: "Products", link: Routes.ProductsPage() },
-      { label: "Support", link: Routes.ContactPage() },
-    ],
+    links: [{ label: "Products", link: Routes.ProductsPage() }],
   },
   {
     title: "Project",

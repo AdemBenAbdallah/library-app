@@ -1,11 +1,15 @@
+import { AuthenticationForm } from "@/core/components/MainAuthForm";
+import { Vertical } from "@/core/components/MantineLayout";
 import NotFountd from "@/core/components/NotFound";
 import Layout from "@/core/layouts/Layout";
 import deleteCartItem from "@/features/carts/mutations/deleteCartItem";
 import getCart from "@/features/carts/queries/getCart";
 import { CartItemsType } from "@/features/carts/schema";
 import addOrder from "@/features/orders/mutations/addOrder";
+import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
 import DeleteModal from "@/modals/components/DeleteModal";
 import { getUploadThingUrl } from "@/utils/image-utils";
+import { useStringQueryPram } from "@/utils/utils";
 import { BlitzPage } from "@blitzjs/next";
 import { useMutation, useQuery } from "@blitzjs/rpc";
 import { Avatar, Button, Group, NumberInput, Stack, Table, Text, Title } from "@mantine/core";
@@ -150,6 +154,23 @@ const CartSummary = ({ orderProducts }: { orderProducts: OrderProductType[] | nu
 };
 
 const CartPage: BlitzPage = () => {
+  const currentUser = useCurrentUser();
+  const formType = useStringQueryPram("form") || "login";
+
+  return (
+    <Layout title="Cart">
+      {currentUser && <CartDetails />}
+
+      {!currentUser && (
+        <Vertical fullH align="center" justify="center">
+          <AuthenticationForm initialFormType={Array.isArray(formType) ? formType[0] : formType} />
+        </Vertical>
+      )}
+    </Layout>
+  );
+};
+
+const CartDetails = () => {
   const [cartItems] = useQuery(getCart, {});
   const [orderProducts, setOrderProducts] = useState<OrderProductType[] | null>(null);
 
@@ -165,22 +186,20 @@ const CartPage: BlitzPage = () => {
     }
   }, [cartItems]);
 
-  const isVide = cartItems?.length === 0;
+  const isVide = !cartItems || cartItems?.length === 0;
   return (
-    <Layout title="Cart">
-      <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
-        <Title>Shopping Cart</Title>
-        {isVide && <NotFountd text="Votre panier est vide" />}
-        {!isVide && (
-          <Group w="100%" align="start" gap={50}>
-            <Stack flex={7}>
-              <CartTable items={cartItems} setOrderProducts={setOrderProducts} />
-            </Stack>
-            <CartSummary orderProducts={orderProducts} />
-          </Group>
-        )}
-      </Stack>
-    </Layout>
+    <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
+      <Title>Shopping Cart</Title>
+      {isVide && <NotFountd text="Votre panier est vide" />}
+      {!isVide && (
+        <Group w="100%" align="start" gap={50}>
+          <Stack flex={7}>
+            <CartTable items={cartItems} setOrderProducts={setOrderProducts} />
+          </Stack>
+          <CartSummary orderProducts={orderProducts} />
+        </Group>
+      )}
+    </Stack>
   );
 };
 
