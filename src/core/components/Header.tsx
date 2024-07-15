@@ -22,7 +22,66 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconLogout, IconShoppingCart, IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { NextRouter, useRouter } from "next/router";
+import router, { useRouter } from "next/router";
+
+const NavLink = ({ href, children }) => (
+  <Link href={href} className={classes.link}>
+    {children}
+  </Link>
+);
+
+const UserButtons = ({ currentUser, router }) => {
+  if (!currentUser) {
+    return (
+      <Group visibleFrom="sm">
+        <Button component={Link} href={Routes.CartPage()} variant="default">
+          Connexion
+        </Button>
+        <Button onClick={() => router.push(Routes.CartPage({ form: "register" }))}>S'inscrire</Button>
+      </Group>
+    );
+  }
+  return <CurrentUserExist router={router} />;
+};
+
+const DrawerContent = ({ currentUser }) => {
+  const [$logoutMutation] = useMutation(logout);
+
+  return (
+    <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
+      <Divider my="sm" />
+      <NavLink href={Routes.Home()}>Accueil</NavLink>
+      <NavLink href={Routes.ProductsPage()}>Products</NavLink>
+      <NavLink href={Routes.CartPage()}>Cart</NavLink>
+      <NavLink href={Routes.OrderPage()}>Order</NavLink>
+      <Divider my="sm" />
+      {!currentUser ? (
+        <Group justify="center" grow pb="xl" px="md">
+          <Button component={Link} href={Routes.AuthPage({ path: "/products/products" })} fullWidth variant="default">
+            Connexion
+          </Button>
+          <Button component={Link} href={Routes.AuthPage({ path: "/products/products", form: "register" })} fullWidth>
+            S'inscrire
+          </Button>
+        </Group>
+      ) : (
+        <Group pr={20}>
+          <Button
+            ml="auto"
+            display="block"
+            leftSection={<IconLogout size={20} />}
+            onClick={async () => {
+              await $logoutMutation();
+              await router.push("/");
+            }}
+          >
+            Se déconnecter
+          </Button>
+        </Group>
+      )}
+    </ScrollArea>
+  );
+};
 
 export function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -38,36 +97,17 @@ export function Header() {
             <Image style={{ borderRadius: theme.radius.md }} src="/images/logo.png" w={90} h={30} />
           </Link>
           <Group h="100%" gap={0} visibleFrom="sm">
-            <Link href={Routes.Home()} className={classes.link}>
-              Accueil
-            </Link>
-            <Link href={Routes.ProductsPage()} className={classes.link}>
-              Products
-            </Link>
-            <Link href={Routes.CartPage()} className={classes.link}>
-              Cart
-            </Link>
-            <Link href={Routes.OrderPage()} className={classes.link}>
-              Order
-            </Link>
+            <NavLink href={Routes.Home()}>Accueil</NavLink>
+            <NavLink href={Routes.ProductsPage()}>Products</NavLink>
+            <NavLink href={Routes.CartPage()}>Cart</NavLink>
+            <NavLink href={Routes.OrderPage()}>Order</NavLink>
           </Group>
-
           <Group>
-            {!currentUser && (
-              <Group visibleFrom="sm">
-                <Button component={Link} href={Routes.CartPage()} variant="default">
-                  Connexion
-                </Button>
-                <Button onClick={() => router.push(Routes.CartPage({ form: "register" }))}>S'inscrire</Button>{" "}
-              </Group>
-            )}
-
-            {currentUser && <CurrentUserExist router={router} />}
+            <UserButtons currentUser={currentUser} router={router} />
             <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
           </Group>
         </Group>
       </header>
-
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}
@@ -77,45 +117,13 @@ export function Header() {
         hiddenFrom="sm"
         zIndex={1000000}
       >
-        <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
-          <Divider my="sm" />
-
-          <Link href={Routes.Home()} className={classes.link}>
-            Accueil
-          </Link>
-
-          <Link href={Routes.ProductsPage()} className={classes.link}>
-            Products
-          </Link>
-
-          <Divider my="sm" />
-          {!currentUser && (
-            <Group justify="center" grow pb="xl" px="md">
-              <Box>
-                <Button w={"100%"} variant="default">
-                  Connexion
-                </Button>
-              </Box>
-              <Box>
-                <Button w={"100%"}>S'inscrire</Button>{" "}
-              </Box>
-            </Group>
-          )}
-
-          {currentUser && (
-            <Group justify="center" grow pb="xl" px="md">
-              <Box>
-                <Button w={"100%"}>Mon compte</Button>
-              </Box>
-            </Group>
-          )}
-        </ScrollArea>
+        <DrawerContent currentUser={currentUser} />
       </Drawer>
     </Box>
   );
 }
 
-const CurrentUserExist = ({ router }: { router: NextRouter }) => {
+const CurrentUserExist = ({ router }) => {
   const [totalQuantity] = useQuery(getCartTotalQuatity, {}, { refetchOnWindowFocus: false });
   const [$logoutMutation] = useMutation(logout);
   const session = useSession();
@@ -141,7 +149,6 @@ const CurrentUserExist = ({ router }: { router: NextRouter }) => {
           <IconUserPlus />
         </Tooltip>
       )}
-
       <Button
         visibleFrom="sm"
         variant="default"
@@ -151,8 +158,7 @@ const CurrentUserExist = ({ router }: { router: NextRouter }) => {
           await router.push("/");
         }}
       >
-        {" "}
-        Se deconnecter
+        Se déconnecter
       </Button>
     </Group>
   );
