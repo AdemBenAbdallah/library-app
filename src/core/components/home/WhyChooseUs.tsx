@@ -1,59 +1,30 @@
-import { Horizontal, Vertical } from "@/core/components/MantineLayout";
-import { CheckIcon, ColorSwatch, Container, Flex, Image, Text, Title, rem } from "@mantine/core";
+import { Button, Container, Flex, Group, Image, Stack, Text, Title, rem } from "@mantine/core";
 
 const WhyChooseUs = () => {
-  const reasons = [
-    "1 programme gratuit pour les nouveaux",
-    "Installations à la pointe de la technologie",
-    "Entraînez-vous plus intelligemment",
-    "Plans d'entraînement personnalisés",
-    "Plus de 25+ coachs experts",
-    "Communauté solidaire",
-    "Partenaires fiables",
-    "Horaires flexibles",
-  ];
-
   return (
-    <Container size="md" mt={{ base: 100, md: 200 }}>
-      <Flex align="flex-start" gap="xl" direction={{ base: "column", md: "row" }}>
-        <Image
-          display={{ base: "none", md: "block" }}
-          flex={1}
-          fit="cover"
-          radius={12}
-          src={"/images/why_choose_us.webp"}
-          alt="Pourquoi nous choisir"
-          w={300}
-          h={600}
-        />
-        <Vertical flex={1} gap="xl">
-          <Vertical gap={5}>
-            <Vertical gap={0}>
-              <Text c="lime.6" fw={600}>
-                À propos
-              </Text>
-              <Title order={1} fz={{ base: rem(35), md: rem(40) }}>
-                Pourquoi nous choisir
-              </Title>
-            </Vertical>
-            <Text c={"gray"}>
-              Choisissez votre classe préférée et commencez maintenant. Rappelez-vous, le seul mauvais entraînement est
-              celui que vous n'avez pas fait.
-            </Text>
-          </Vertical>
-          <Vertical gap="sm">
-            {reasons.map((reason, index) => (
-              <Horizontal key={index} gap="lg" align="center">
-                <ColorSwatch component="button" color="var(--mantine-color-lime-6)" style={{ color: "#fff" }}>
-                  <CheckIcon style={{ width: rem(12), height: rem(12) }} />
-                </ColorSwatch>
-                <Text fz={{ base: rem(15), md: rem(17) }} fw={600}>
-                  {reason}
-                </Text>
-              </Horizontal>
-            ))}
-          </Vertical>
-        </Vertical>
+    <Container size="xl" mt={{ base: 100, md: 200 }}>
+      <Flex gap={{ base: 20, md: 100 }} direction={{ base: "column", md: "row" }} align={"center"}>
+        <Stack flex={1}>
+          <Stack gap={0}>
+            <Text c={"brandy"}>Complete Series</Text>
+            <Title fz={{ base: rem(40), md: rem(40) }} order={2}>
+              Smoke And The Heart
+            </Title>
+          </Stack>
+          <Text c={"gray.8"} fz={14}>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni
+            dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor
+            sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore
+            magnam aliquam quaerat voluptatem.
+          </Text>
+          <Button>READ MORE</Button>
+        </Stack>
+        <Group flex={1}>
+          <Image w={{ base: 70, md: 250 }} src={"/images/book-cover1.jpg"} alt="book cover" />
+          <Image w={{ base: 70, md: 250 }} src={"/images/book-cover2.jpg"} alt="book cover" />
+          <Image w={{ base: 70, md: 250 }} src={"/images/book-cover3.jpg"} alt="book cover" />
+          <Image w={{ base: 70, md: 250 }} src={"/images/book-cover4.jpg"} alt="book cover" />
+        </Group>
       </Flex>
     </Container>
   );

@@ -5,6 +5,7 @@ export const theme = createTheme({
   primaryColor: "brandy",
   colors: {
     brandy: colorsTuple("#957049"),
+    custom: colorsTuple("#e9cfb2"),
     "ocean-blue": [
       "#7AD1DD",
       "#5FCCDB",

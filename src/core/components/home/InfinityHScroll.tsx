@@ -1,34 +1,51 @@
-import { Icons } from "@/assets/Icons";
-import useResponsive from "@/utils/useResponsive";
-import { Box, rem } from "@mantine/core";
+import { Routes } from "@blitzjs/next";
+import { Box, Button, Image } from "@mantine/core";
+import Link from "next/link";
 import React from "react";
 
 const customStyles = {
   "--width": "150px",
-  "--height": "50px",
-  "--quantity": 3,
+  "--height": "200px",
+  "--quantity": 11,
 } as React.CSSProperties;
 
 const InfinityHScroll = () => {
-  const { isMobile } = useResponsive();
   return (
-    <>
-      <Box bg={"lime"} h={{ base: 50, md: 70 }} c="black.0" mb={{ base: rem(49), sm: rem(170) }}>
-        <div className="slider" style={customStyles}>
-          <div className="list">
-            {[
-              <Icons.program width={isMobile ? 150 : 250} key="program" />,
-              <Icons.trainning width={isMobile ? 150 : 250} key="trainning" />,
-              <Icons.program width={isMobile ? 150 : 250} key="program" />,
-            ].map((Icon, idx) => (
-              <div className="item" style={{ "--position": idx + 1 } as React.CSSProperties} key={idx}>
-                {Icon}
+    <Box>
+      <div className="slider" style={customStyles}>
+        <div className="list">
+          {Array(11)
+            .fill(0)
+            .map((_, index) => (
+              <div key={index} className="item" style={{ "--position": index + 1 } as React.CSSProperties}>
+                <Image src={`/images/book-cover${index + 1}.jpg`} alt="hero" />
               </div>
             ))}
-          </div>
         </div>
-      </Box>
-    </>
+      </div>
+      <div className="slider reverse" style={customStyles}>
+        <div className="list">
+          {Array(11)
+            .fill(0)
+            .map((_, index) => (
+              <div key={index} className="item" style={{ "--position": index + 1 } as React.CSSProperties}>
+                <Image src={`/images/book-cover${index + 1}.jpg`} alt="hero" />
+              </div>
+            ))}
+        </div>
+      </div>
+      <Button
+        component={Link}
+        href={Routes.ProductsPage()}
+        variant="subtle"
+        td="underline"
+        c="brandy"
+        display={"block"}
+        ml={"auto"}
+      >
+        See all
+      </Button>
+    </Box>
   );
 };
 

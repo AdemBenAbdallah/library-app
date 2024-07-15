@@ -54,7 +54,7 @@ export function FooterLinks() {
     <footer className={classes.footer}>
       <Container className={classes.inner}>
         <div className={classes.logo}>
-          <Image style={{ borderRadius: theme.radius.md }} src="/images/logo.svg" w={50} />
+          <Image style={{ borderRadius: theme.radius.md }} src="/images/logo.png" w={50} />
 
           <Text size="xs" c="dimmed" className={classes.description}>
             Développez rapidement un corps musclé et performant avec notre programme d'entraînement intensif.
