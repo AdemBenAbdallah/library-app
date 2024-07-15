@@ -1,11 +1,11 @@
 import { Avatar, Button, Container, Flex, Group, Stack, Text, Title } from "@mantine/core";
 import React from "react";
 
-const OurPost: React.FC = () => {
+const Section3: React.FC = () => {
   return (
     <React.Fragment>
       <Stack bg={"custom"} mt={100}>
-        <Container size={"xl"} my="md" py={200}>
+        <Container size={"xl"} my="md" py={{ base: 50, md: 200 }}>
           <Flex gap={50} direction={{ base: "column", md: "row" }} align={"center"}>
             <Stack flex={1}>
               <Stack gap={0}>
@@ -22,7 +22,7 @@ const OurPost: React.FC = () => {
               {Array(4)
                 .fill(null)
                 .map((_, idx) => (
-                  <Stack key={idx} w={400} bg={"white"} p={30} style={{ borderRadius: "10px" }}>
+                  <Stack key={idx} w={{ base: "100%", md: 400 }} bg={"white"} p={30} style={{ borderRadius: "10px" }}>
                     <Text>
                       Justo vestibulum risus imperdiet conse ctetur conse ctetur pretium urna augue etiam risus acc um
                       san volutpat urna, eusem per enim, est aliquam laoet urna fringilla viverra.
@@ -44,4 +44,4 @@ const OurPost: React.FC = () => {
   );
 };
 
-export default OurPost;
+export default Section3;
