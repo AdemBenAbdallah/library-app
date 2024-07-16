@@ -2,16 +2,18 @@ import { InputWithButton } from "@/core/components/InputWithButton";
 import RenderTable, { Column } from "@/core/components/RenderTable";
 import UserAvatar from "@/core/components/UserAvatar";
 import DashLayout from "@/core/layouts/DashLayout";
+import assignOrder from "@/features/orders/mutations/assignOrder";
 import updateOrderStatus from "@/features/orders/mutations/updateOrderStatus";
 import getOrdersByAdmin from "@/features/orders/queries/getOrdersByAdmin";
+import getLivreurByAdmin from "@/features/users/queries/getLivreurByAdmin";
 import { categoryNameFormat } from "@/utils/utils";
 import { BlitzPage } from "@blitzjs/next";
-import { useMutation, usePaginatedQuery } from "@blitzjs/rpc";
-import { Badge, Button, ComboboxItem, Group, Modal, Select, Stack } from "@mantine/core";
+import { useMutation, usePaginatedQuery, useQuery } from "@blitzjs/rpc";
+import { Badge, Button, ComboboxItem, Group, Modal, Select, Stack, Tooltip } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { OrderStatus } from "@prisma/client";
-import { IconEdit } from "@tabler/icons-react";
+import { IconEdit, IconSquareRoundedPlusFilled } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -35,9 +37,12 @@ const AdminOrders: BlitzPage = () => {
   const [search, setSearch] = useDebouncedState("", 200);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const [openedAssign, { open: openAssign, close: closeAssign }] = useDisclosure(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [$updateOrderStatus, { isLoading }] = useMutation(updateOrderStatus);
-  const [selectedStatus, setSelectedStatus] = useState<ComboboxItem | null>(null);
+  const [selected, setSelected] = useState<ComboboxItem | null>(null);
+  const [livreurs] = useQuery(getLivreurByAdmin, { search: "" });
+  const [$assignOrder] = useMutation(assignOrder);
 
   const router = useRouter();
   const page = Number(router.query.page) || 0;
@@ -81,13 +86,24 @@ const AdminOrders: BlitzPage = () => {
     {
       header: "",
       accessor: (order: OrderType) => (
-        <Group
-          onClick={() => {
-            setSelectedOrderId(order.id);
-            open();
-          }}
-        >
-          <IconEdit stroke={1} onClick={() => {}} style={{ cursor: "pointer" }} size={25} />
+        <Group>
+          <Group
+            onClick={() => {
+              setSelectedOrderId(order.id);
+              open();
+            }}
+          >
+            <IconEdit stroke={1} style={{ cursor: "pointer" }} size={25} />
+          </Group>
+          <Tooltip
+            onClick={() => {
+              setSelectedOrderId(order.id);
+              openAssign();
+            }}
+            label="Assign to livreur"
+          >
+            <IconSquareRoundedPlusFilled style={{ cursor: "pointer" }} size={25} />
+          </Tooltip>
         </Group>
       ),
     },
@@ -127,27 +143,60 @@ const AdminOrders: BlitzPage = () => {
         <Stack>
           <Select
             size="lg"
-            placeholder="Choisissez une catégorie"
+            placeholder="Choisissez un livreur"
             data={Object.keys(OrderStatus).map((key) => ({
               value: key,
               label: categoryNameFormat(key) || "",
             }))}
-            value={selectedStatus ? selectedStatus.value : null}
-            onChange={(_value, option) => setSelectedStatus(option)}
+            value={selected ? selected.value : null}
+            onChange={(_value, option) => setSelected(option)}
           />
           <Group ml={"auto"}>
             <Button variant="outline">Cancel</Button>
             <Button
               loading={isLoading}
-              disabled={!selectedStatus}
+              disabled={!selected}
               onClick={async () => {
-                await $updateOrderStatus({ id: selectedOrderId!, status: selectedStatus?.value as OrderStatus });
+                await $updateOrderStatus({ id: selectedOrderId!, status: selected?.value as OrderStatus });
                 showNotification({
                   color: "green",
                   title: "Updated",
                   message: "order status updated successfully",
                 });
                 close();
+              }}
+            >
+              Update
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+      <Modal opened={openedAssign} onClose={closeAssign} title="More Info">
+        <Stack>
+          <Select
+            size="lg"
+            placeholder="Choisissez une catégorie"
+            data={livreurs.map((livreur) => ({
+              value: livreur.id,
+              label: livreur.name || "",
+            }))}
+            value={selected ? selected.value : null}
+            onChange={(_value, option) => setSelected(option)}
+          />
+          <Group ml={"auto"}>
+            <Button variant="outline">Cancel</Button>
+            <Button
+              loading={isLoading}
+              disabled={!selected}
+              onClick={async () => {
+                if (!selectedOrderId || !selected) return;
+                await $assignOrder({ orderId: selectedOrderId, livreurId: selected.value });
+                showNotification({
+                  color: "green",
+                  title: "Updated",
+                  message: "order assigned successfully",
+                });
+                setSelected(null);
               }}
             >
               Update
