@@ -112,7 +112,7 @@ const CartSummary = ({ orderProducts }: { orderProducts: OrderProductType[] | nu
   const [$addOrder] = useMutation(addOrder, {});
   return (
     <Stack c="white" p={20} flex={2} bg="black" style={{ borderRadius: 8 }}>
-      <Text fw={500}>Shopping Cart</Text>
+      <Title>Panier</Title>
       <Stack gap={50}>
         <Stack>
           {orderProducts?.map((item) => (
@@ -189,7 +189,7 @@ const CartDetails = () => {
   const isVide = !cartItems || cartItems?.length === 0;
   return (
     <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
-      <Title>Shopping Cart</Title>
+      <Title>Panier</Title>
       {isVide && <NotFountd text="Votre panier est vide" />}
       {!isVide && (
         <Group w="100%" align="start" gap={50}>

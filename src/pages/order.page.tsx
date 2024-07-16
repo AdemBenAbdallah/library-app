@@ -9,6 +9,7 @@ import { useQuery } from "@blitzjs/rpc";
 import { Badge, Group, Stack, Table, Title } from "@mantine/core";
 import dayjs from "dayjs";
 import { statusColor } from "./admin/orders.page";
+import NotFountd from "@/core/components/NotFound";
 
 const OrderTable = ({ items }: { items: OrdersType }) => {
   const rows = items.map((item) => (
@@ -56,15 +57,18 @@ const OrderPage: BlitzPage = () => {
 
 const OrderDetails = () => {
   const [orders] = useQuery(getOrders, {});
-
+  const isVide = !orders || orders.length === 0;
   return (
     <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
-      <Title>Orders</Title>
-      <Group w="100%" align="start" gap={50}>
-        <Stack flex={7}>
-          <OrderTable items={orders} />
-        </Stack>
-      </Group>
+      <Title>Commandes</Title>
+      {isVide && <NotFountd text="Aucune commande" />}
+      {!isVide && (
+        <Group w="100%" align="start" gap={50}>
+          <Stack flex={7}>
+            <OrderTable items={orders} />
+          </Stack>
+        </Group>
+      )}
     </Stack>
   );
 };

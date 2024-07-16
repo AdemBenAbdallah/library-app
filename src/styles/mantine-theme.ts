@@ -1,5 +1,5 @@
 import { Loader, colorsTuple, createTheme } from "@mantine/core";
-import { CssLoader } from "./cssLoader/CssLoader";
+import { RingLoader } from "./cssLoader/RingLoader";
 
 export const theme = createTheme({
   primaryColor: "brandy",
@@ -40,8 +40,8 @@ export const theme = createTheme({
     },
     Loader: Loader.extend({
       defaultProps: {
-        loaders: { ...Loader.defaultLoaders, custom: CssLoader },
-        type: "custom",
+        loaders: { ...Loader.defaultLoaders, ring: RingLoader },
+        type: "ring",
       },
     }),
   },

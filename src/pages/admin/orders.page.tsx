@@ -41,7 +41,7 @@ const AdminOrders: BlitzPage = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [$updateOrderStatus, { isLoading }] = useMutation(updateOrderStatus);
   const [selected, setSelected] = useState<ComboboxItem | null>(null);
-  const [livreurs] = useQuery(getLivreurByAdmin, { search: "" });
+  const [livreurs, { isLoading: isLoadingLivreurs }] = useQuery(getLivreurByAdmin, { search: "" });
   const [$assignOrder] = useMutation(assignOrder);
 
   const router = useRouter();
@@ -139,11 +139,11 @@ const AdminOrders: BlitzPage = () => {
           to={to}
         />
       </Stack>
-      <Modal opened={opened} onClose={close} title="More Info">
+      <Modal opened={opened} onClose={close} title="Change status">
         <Stack>
           <Select
             size="lg"
-            placeholder="Choisissez un livreur"
+            placeholder="Select status"
             data={Object.keys(OrderStatus).map((key) => ({
               value: key,
               label: categoryNameFormat(key) || "",
@@ -171,15 +171,16 @@ const AdminOrders: BlitzPage = () => {
           </Group>
         </Stack>
       </Modal>
-      <Modal opened={openedAssign} onClose={closeAssign} title="More Info">
+      <Modal opened={openedAssign} onClose={closeAssign} title="Assign to livreur">
         <Stack>
           <Select
             size="lg"
-            placeholder="Choisissez une catégorie"
+            placeholder="Choisissez un livreur"
             data={livreurs.map((livreur) => ({
               value: livreur.id,
               label: livreur.name || "",
             }))}
+            disabled={isLoadingLivreurs}
             value={selected ? selected.value : null}
             onChange={(_value, option) => setSelected(option)}
           />
@@ -199,7 +200,7 @@ const AdminOrders: BlitzPage = () => {
                 setSelected(null);
               }}
             >
-              Update
+              Assign
             </Button>
           </Group>
         </Stack>

@@ -98,9 +98,9 @@ export function Header() {
           </Link>
           <Group h="100%" gap={0} visibleFrom="sm">
             <NavLink href={Routes.Home()}>Accueil</NavLink>
-            <NavLink href={Routes.ProductsPage()}>Products</NavLink>
-            <NavLink href={Routes.CartPage()}>Cart</NavLink>
-            <NavLink href={Routes.OrderPage()}>Order</NavLink>
+            <NavLink href={Routes.ProductsPage()}>Livres</NavLink>
+            <NavLink href={Routes.CartPage()}>Panier</NavLink>
+            <NavLink href={Routes.OrderPage()}>Commande</NavLink>
           </Group>
           <Group>
             <UserButtons currentUser={currentUser} router={router} />
