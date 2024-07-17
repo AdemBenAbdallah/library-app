@@ -10,13 +10,14 @@ import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
 import DeleteModal from "@/modals/components/DeleteModal";
 import { getUploadThingUrl } from "@/utils/image-utils";
 import { useStringQueryPram } from "@/utils/utils";
-import { BlitzPage } from "@blitzjs/next";
+import { BlitzPage, Routes } from "@blitzjs/next";
 import { useMutation, useQuery } from "@blitzjs/rpc";
 import { Avatar, Button, Group, NumberInput, Stack, Table, Text, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { CartItem } from "@prisma/client";
 import { IconCheck, IconTrash } from "@tabler/icons-react";
+import router from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
 type OrderProductType = { id: string; title: string; price: number; quantity: number };
@@ -109,7 +110,7 @@ const CartTable = ({
 
 const CartSummary = ({ orderProducts }: { orderProducts: OrderProductType[] | null }) => {
   const total = useMemo(() => orderProducts?.reduce((acc, item) => acc + item.price, 0), [orderProducts]);
-  const [$addOrder] = useMutation(addOrder, {});
+  const [$addOrder, { isLoading }] = useMutation(addOrder, {});
   return (
     <Stack c="white" p={20} flex={2} bg="black" style={{ borderRadius: 8 }}>
       <Title>Panier</Title>
@@ -130,6 +131,7 @@ const CartSummary = ({ orderProducts }: { orderProducts: OrderProductType[] | nu
             </Text>
           </Group>
           <Button
+            loading={isLoading}
             onClick={async () => {
               if (!orderProducts || !total) return;
               await $addOrder({ orderProducts, totalPrice: total });
@@ -139,13 +141,14 @@ const CartSummary = ({ orderProducts }: { orderProducts: OrderProductType[] | nu
                 color: "green",
                 icon: <IconCheck size={16} />,
               });
+              router.push(Routes.OrderPage());
             }}
             size="sm"
             w="100%"
             bg="white"
             c="black"
           >
-            Checkout
+            Commander
           </Button>
         </Stack>
       </Stack>

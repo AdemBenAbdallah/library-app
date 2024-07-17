@@ -1,5 +1,6 @@
 import { AuthenticationForm } from "@/core/components/MainAuthForm";
 import { Vertical } from "@/core/components/MantineLayout";
+import NotFountd from "@/core/components/NotFound";
 import Layout from "@/core/layouts/Layout";
 import getOrders from "@/features/orders/queries/getOrders";
 import { OrdersType } from "@/features/orders/schema";
@@ -9,7 +10,6 @@ import { useQuery } from "@blitzjs/rpc";
 import { Badge, Group, Stack, Table, Title } from "@mantine/core";
 import dayjs from "dayjs";
 import { statusColor } from "./admin/orders.page";
-import NotFountd from "@/core/components/NotFound";
 
 const OrderTable = ({ items }: { items: OrdersType }) => {
   const rows = items.map((item) => (
@@ -30,9 +30,9 @@ const OrderTable = ({ items }: { items: OrdersType }) => {
       <Table.Thead>
         <Table.Tr>
           <Table.Th>Date</Table.Th>
-          <Table.Th>Price</Table.Th>
-          <Table.Th>Quantity</Table.Th>
-          <Table.Th>Status</Table.Th>
+          <Table.Th>Prix</Table.Th>
+          <Table.Th>Quantité</Table.Th>
+          <Table.Th>Statut</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>{rows}</Table.Tbody>

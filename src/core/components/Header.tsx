@@ -145,9 +145,11 @@ const CurrentUserExist = ({ router }) => {
         </Indicator>
       </Link>
       {session.role === "ADMIN" && (
-        <Tooltip label="ADMIN" style={{ cursor: "pointer" }} onClick={() => router.push(Routes.DashboardPage())}>
-          <IconUserPlus />
-        </Tooltip>
+        <Box style={{ cursor: "pointer" }}>
+          <Tooltip label="ADMIN" onClick={() => router.push(Routes.DashboardPage())}>
+            <IconUserPlus />
+          </Tooltip>
+        </Box>
       )}
       <Button
         visibleFrom="sm"
