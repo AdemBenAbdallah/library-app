@@ -9,10 +9,7 @@
     "**/node_modules": true,
     "**/docs": true,
     "**/.next": true,
-    "**/.husky": true,
     // "**/public": true,
-    ".editorconfig": true,
-    ".npmrc": true,
     "next-env.d.ts": true,
     "README.md": true,
     "yarn.lock": true

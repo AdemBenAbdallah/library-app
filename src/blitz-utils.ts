@@ -1,14 +1,14 @@
 import { URL_ORIGIN } from "@/config";
 import { generateToken, hash256 } from "@blitzjs/auth";
 import { TokenType } from "@prisma/client";
-import { addDays } from "date-fns";
+import dayjs from "dayjs";
 import db from "~/db";
 const EMAIL_VERIFY_LINK_IN_HOUR = 4;
 
 const creatToken = async ({ userId, userEmail, tokenType }) => {
   const token = generateToken();
   const hashedToken = hash256(token);
-  const expiresAt = addDays(new Date(), EMAIL_VERIFY_LINK_IN_HOUR);
+  const expiresAt = dayjs().add(EMAIL_VERIFY_LINK_IN_HOUR, "hour").toDate();
 
   await db.token.create({
     data: {
