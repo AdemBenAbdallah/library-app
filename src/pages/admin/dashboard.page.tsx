@@ -1,6 +1,8 @@
 import { StatsGrid } from "@/core/components/StatsGrid";
 import DashLayout from "@/core/layouts/DashLayout";
+import getRevenueForYear from "@/features/statistics/queries/getRevenueForYear";
 import { BlitzPage } from "@blitzjs/next";
+import { useQuery } from "@blitzjs/rpc";
 import { LineChart } from "@mantine/charts";
 
 export const data = [
@@ -38,6 +40,8 @@ export const data = [
   },
 ];
 const DashboardPage: BlitzPage = () => {
+  const [totalRevenue] = useQuery(getRevenueForYear, {});
+
   return (
     <DashLayout>
       <StatsGrid />
@@ -45,9 +49,9 @@ const DashboardPage: BlitzPage = () => {
       <LineChart
         flex={6}
         h={"100%"}
-        data={data}
+        data={totalRevenue}
         dataKey="date"
-        series={[{ name: "Apples", color: "indigo.6" }]}
+        series={[{ name: "Revenue", color: "indigo.6" }]}
         curveType="monotone"
         connectNulls
       />

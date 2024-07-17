@@ -32,3 +32,9 @@ export const categoryNameFormat = (() => {
     return formattedCategory;
   };
 })();
+
+export const getDateRange = (unit: "month" | "year", subtract = 0) => {
+  const start = dayjs().subtract(subtract, unit).startOf(unit).toDate();
+  const end = dayjs().subtract(subtract, unit).endOf(unit).toDate();
+  return { start, end };
+};

@@ -1,15 +1,9 @@
+import { getDateRange } from "@/utils/utils";
 import { resolver } from "@blitzjs/rpc";
-import dayjs from "dayjs";
 import { z } from "zod";
 import db from "~/db";
 
 const Input = z.object({});
-
-const getDateRange = (unit: "month" | "year", subtract = 0) => {
-  const start = dayjs().subtract(subtract, unit).startOf(unit).toDate();
-  const end = dayjs().subtract(subtract, unit).endOf(unit).toDate();
-  return { start, end };
-};
 
 export default resolver.pipe(resolver.zod(Input), resolver.authorize("ADMIN"), async (_, { session: { userId } }) => {
   const currentMonth = getDateRange("month");
