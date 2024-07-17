@@ -1,8 +1,7 @@
 import { SecurePassword } from "@blitzjs/auth/secure-password";
 import { resolver } from "@blitzjs/rpc";
-import db from "db";
+import db, { RoleType } from "db";
 import React from "react";
-import { Role } from "types";
 import EmailTemplateWelcome from "~/email/react-email/emails/welcome";
 import sendEmail from "~/email/sendEmail";
 import { InputSginUp } from "../schemas";
@@ -32,7 +31,7 @@ export default resolver.pipe(
       }),
     });
 
-    await ctx.session.$create({ userId: user.id, role: user.role as Role });
+    await ctx.session.$create({ userId: user.id, role: user.role as RoleType });
     return user;
   },
 );
