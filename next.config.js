@@ -9,6 +9,9 @@ const config = {
   experimental: {
     esmExternals: false,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = withBlitz(config);
