@@ -2,6 +2,7 @@ import FullPageLoader from "@/core/components/FulllPageLoader";
 import { globalModals } from "@/modals";
 import { theme } from "@/styles/mantine-theme";
 import { AppProps, ErrorBoundary } from "@blitzjs/next";
+import "@mantine/charts/styles.css";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
