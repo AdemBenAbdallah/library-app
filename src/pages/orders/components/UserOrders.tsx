@@ -1,15 +1,10 @@
-import { AuthenticationForm } from "@/core/components/MainAuthForm";
-import { Vertical } from "@/core/components/MantineLayout";
 import NotFountd from "@/core/components/NotFound";
-import Layout from "@/core/layouts/Layout";
 import getOrders from "@/features/orders/queries/getOrders";
 import { OrdersType } from "@/features/orders/schema";
-import { useCurrentUser } from "@/features/users/hooks/useCurrentUser";
-import { BlitzPage } from "@blitzjs/next";
+import { statusColor } from "@/pages/admin/orders.page";
 import { useQuery } from "@blitzjs/rpc";
 import { Badge, Group, Stack, Table, Title } from "@mantine/core";
 import dayjs from "dayjs";
-import { statusColor } from "./admin/orders.page";
 
 const OrderTable = ({ items }: { items: OrdersType }) => {
   const rows = items.map((item) => (
@@ -40,27 +35,14 @@ const OrderTable = ({ items }: { items: OrdersType }) => {
   );
 };
 
-const OrderPage: BlitzPage = () => {
-  const currentUser = useCurrentUser();
-
-  return (
-    <Layout title="Order">
-      {currentUser && <OrderDetails />}
-      {!currentUser && (
-        <Vertical fullH align="center" justify="center">
-          <AuthenticationForm />
-        </Vertical>
-      )}
-    </Layout>
-  );
-};
-
-const OrderDetails = () => {
+export const UserOrders = () => {
   const [orders] = useQuery(getOrders, {});
   const isVide = !orders || orders.length === 0;
   return (
     <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
-      <Title>Commandes</Title>
+      <Title mt={"sm"} fz={{ base: "xl", md: "2xl" }}>
+        Commandes
+      </Title>
       {isVide && <NotFountd text="Aucune commande" />}
       {!isVide && (
         <Group w="100%" align="start" gap={50}>
@@ -72,4 +54,3 @@ const OrderDetails = () => {
     </Stack>
   );
 };
-export default OrderPage;

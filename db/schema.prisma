@@ -146,7 +146,6 @@ enum TokenType {
 
 enum RoleType {
   ADMIN
-  COACH
   LIVREUR
   USER
 }

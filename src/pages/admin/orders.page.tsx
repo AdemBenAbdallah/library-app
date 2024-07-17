@@ -39,10 +39,9 @@ const AdminOrders: BlitzPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [openedAssign, { open: openAssign, close: closeAssign }] = useDisclosure(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [$updateOrderStatus, { isLoading }] = useMutation(updateOrderStatus);
   const [selected, setSelected] = useState<ComboboxItem | null>(null);
   const [livreurs, { isLoading: isLoadingLivreurs }] = useQuery(getLivreurByAdmin, { search: "" });
-  const [$assignOrder] = useMutation(assignOrder);
+  const [$assignOrder, { isLoading: isLoadingAssign }] = useMutation(assignOrder);
 
   const router = useRouter();
   const page = Number(router.query.page) || 0;
@@ -139,38 +138,7 @@ const AdminOrders: BlitzPage = () => {
           to={to}
         />
       </Stack>
-      <Modal opened={opened} onClose={close} title="Change status">
-        <Stack>
-          <Select
-            size="lg"
-            placeholder="Select status"
-            data={Object.keys(OrderStatus).map((key) => ({
-              value: key,
-              label: categoryNameFormat(key) || "",
-            }))}
-            value={selected ? selected.value : null}
-            onChange={(_value, option) => setSelected(option)}
-          />
-          <Group ml={"auto"}>
-            <Button variant="outline">Cancel</Button>
-            <Button
-              loading={isLoading}
-              disabled={!selected}
-              onClick={async () => {
-                await $updateOrderStatus({ id: selectedOrderId!, status: selected?.value as OrderStatus });
-                showNotification({
-                  color: "green",
-                  title: "Updated",
-                  message: "order status updated successfully",
-                });
-                close();
-              }}
-            >
-              Update
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      <ToggleModal opened={opened} close={close} selectedOrderId={selectedOrderId} />
       <Modal opened={openedAssign} onClose={closeAssign} title="Assign to livreur">
         <Stack>
           <Select
@@ -187,7 +155,7 @@ const AdminOrders: BlitzPage = () => {
           <Group ml={"auto"}>
             <Button variant="outline">Cancel</Button>
             <Button
-              loading={isLoading}
+              loading={isLoadingAssign}
               disabled={!selected}
               onClick={async () => {
                 if (!selectedOrderId || !selected) return;
@@ -209,4 +177,50 @@ const AdminOrders: BlitzPage = () => {
   );
 };
 
+type ToggleModalProps = {
+  opened: boolean;
+  close: () => void;
+  selectedOrderId: string | null;
+};
+export const ToggleModal = ({ opened, close, selectedOrderId }: ToggleModalProps) => {
+  const [$updateOrderStatus, { isLoading }] = useMutation(updateOrderStatus);
+  const [selected, setSelected] = useState<ComboboxItem | null>(null);
+
+  return (
+    <Modal opened={opened} onClose={close} title="Change status">
+      <Stack>
+        <Select
+          size="lg"
+          placeholder="Select status"
+          data={Object.keys(OrderStatus).map((key) => ({
+            value: key,
+            label: categoryNameFormat(key) || "",
+          }))}
+          value={selected ? selected.value : null}
+          onChange={(_value, option) => setSelected(option)}
+        />
+        <Group ml={"auto"}>
+          <Button variant="outline" onClick={close}>
+            Cancel
+          </Button>
+          <Button
+            loading={isLoading}
+            disabled={!selected}
+            onClick={async () => {
+              await $updateOrderStatus({ id: selectedOrderId!, status: selected?.value as OrderStatus });
+              showNotification({
+                color: "green",
+                title: "Updated",
+                message: "order status updated successfully",
+              });
+              close();
+            }}
+          >
+            Mise a jour
+          </Button>
+        </Group>
+      </Stack>
+    </Modal>
+  );
+};
 export default AdminOrders;

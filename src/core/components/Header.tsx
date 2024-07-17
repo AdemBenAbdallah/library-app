@@ -51,7 +51,7 @@ const DrawerContent = ({ currentUser }) => {
     <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
       <Divider my="sm" />
       <NavLink href={Routes.Home()}>Accueil</NavLink>
-      <NavLink href={Routes.ProductsPage()}>Products</NavLink>
+      <NavLink href={Routes.ProductsPage()}>Livres</NavLink>
       <NavLink href={Routes.CartPage()}>Cart</NavLink>
       <NavLink href={Routes.OrderPage()}>Order</NavLink>
       <Divider my="sm" />

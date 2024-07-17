@@ -1,14 +1,11 @@
-import { resolver } from "@blitzjs/rpc";
-import { Role } from "types";
 import { authenticateUser } from "@/utils/auth-utils";
-import { InputLogin, email } from "../schemas";
+import { resolver } from "@blitzjs/rpc";
+import { RoleType } from "@prisma/client";
+import { InputLogin } from "../schemas";
 
-export default resolver.pipe(
-  resolver.zod(InputLogin),
-  async ({ email, password }, ctx) => {
-    const user = await authenticateUser(email, password);
-    await ctx.session.$create({ userId: user.id, role: user.role as Role });
+export default resolver.pipe(resolver.zod(InputLogin), async ({ email, password }, ctx) => {
+  const user = await authenticateUser(email, password);
+  await ctx.session.$create({ userId: user.id, role: user.role as RoleType });
 
-    return user;
-  }
-);
+  return user;
+});

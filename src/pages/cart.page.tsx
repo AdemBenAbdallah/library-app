@@ -192,7 +192,9 @@ const CartDetails = () => {
   const isVide = !cartItems || cartItems?.length === 0;
   return (
     <Stack w={{ base: "100%", md: 1000, lg: 1200 }} mx="auto">
-      <Title>Panier</Title>
+      <Title mt={"sm"} fz={{ base: "xl", md: "2xl" }}>
+        Panier
+      </Title>
       {isVide && <NotFountd text="Votre panier est vide" />}
       {!isVide && (
         <Group w="100%" align="start" gap={50}>
