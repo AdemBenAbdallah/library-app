@@ -12,10 +12,5 @@ export default resolver.pipe(resolver.zod(Input), resolver.authorize(), async ({
 
   return db.user.findFirst({
     where: { id: userId },
-    include: {
-      subscriptions: {
-        select: { subscriptionCost: true, startDate: true, endDate: true },
-      },
-    },
   });
 });

@@ -37,18 +37,15 @@ const UserDetails = ({ userId }: { userId: string | null }) => {
       )}
 
       <Timeline active={1} bulletSize={24} lineWidth={2}>
-        {user?.subscriptions.map((subscription, idx) => (
-          <Timeline.Item
-            key={idx}
-            bullet={<IconGitBranch size={12} />}
-            title={`${dayjs(subscription.startDate).format("YYYY-MM-DD")} / ${dayjs(subscription.endDate).format("YYYY-MM-DD")}`}
-          >
-            <SubscriptionBadge subscription={subscription} />
-            <Text size="xs" mt={4}>
-              {subscription?.subscriptionCost} DT
-            </Text>
-          </Timeline.Item>
-        ))}
+        <Timeline.Item
+          bullet={<IconGitBranch size={12} />}
+          title={`${dayjs(new Date()).format("YYYY-MM-DD")} / ${dayjs(new Date()).add(1, "month").format("YYYY-MM-DD")}`}
+        >
+          <SubscriptionBadge subscription={{ startDate: new Date(), endDate: new Date() }} />
+          <Text size="xs" mt={4}>
+            120 DT
+          </Text>
+        </Timeline.Item>
       </Timeline>
     </Stack>
   );

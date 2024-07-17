@@ -22,25 +22,11 @@ export default resolver.pipe(
           ...paginateArgs,
           where,
           orderBy,
-          include: {
-            subscriptions: {
-              orderBy: { startDate: "desc" },
-              select: { startDate: true, endDate: true },
-              take: 1,
-            },
-          },
         }),
     });
 
-    const formatteUsers = users.map((user) => {
-      const { subscriptions, ...restUser } = user;
-      return Object.assign({}, restUser, {
-        lastSubscription: subscriptions.length ? subscriptions[0] : null,
-      });
-    });
-
     return {
-      users: formatteUsers,
+      users: users,
       pageCount,
       from,
       to,
