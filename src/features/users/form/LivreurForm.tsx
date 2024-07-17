@@ -5,6 +5,7 @@ import { Button, Group, Paper, PasswordInput, Radio, Stack, TextInput } from "@m
 import { DateInput } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import dayjs from "dayjs";
 
 export function LivreurForm({ close }: { close: () => void }) {
   const [$signupAsAdmin, { isLoading }] = useMutation(signupAsAdmin);
@@ -24,7 +25,7 @@ export function LivreurForm({ close }: { close: () => void }) {
             notifications.show({
               title: "Success",
               color: "green",
-              message: "Coach created!",
+              message: "Livreur created!",
             });
             close();
           })}
@@ -43,9 +44,26 @@ export function LivreurForm({ close }: { close: () => void }) {
             <DateInput
               required
               {...form.getInputProps("birthdayDate")}
+              defaultValue={dayjs().subtract(18, "year").toDate()}
               clearable
               label="birthday Date"
               placeholder="Date input"
+              radius="md"
+            />
+
+            <TextInput
+              required
+              {...form.getInputProps("address")}
+              label="Adresse"
+              placeholder="Entrée de l'adresse"
+              radius="md"
+            />
+
+            <TextInput
+              required
+              {...form.getInputProps("phoneNumber")}
+              label="Telephone"
+              placeholder="Entrée du telephone"
               radius="md"
             />
 

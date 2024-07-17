@@ -10,10 +10,12 @@ const seed = async () => {
   for (let i = 0; i < 120; i++) {
     await db.user.create({
       data: {
-        name: "User " + i,
-        email: `user${i}@gmail.com`,
+        name: "Us " + i,
+        email: `us${i}@gmail.com`,
         hashedPassword: "skdfhsdlmjfmqjlsdfnqsndf",
         birthdayDate: new Date(2020, 0, 1),
+        address: "address " + i,
+        phoneNumber: "123456789" + i,
         gender: "FEMALE",
         role: "USER",
         onboarded: false,

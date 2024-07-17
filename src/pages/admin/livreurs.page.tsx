@@ -57,6 +57,8 @@ const LivreursPage: BlitzPage = () => {
     },
     { header: "E-mail", accessor: "email" },
     { header: "Âge", accessor: (user: UserType) => calculateAge(user.birthdayDate) },
+    { header: "Address", accessor: "address" },
+    { header: "Telephone", accessor: "phoneNumber" },
     {
       header: "Genre",
       accessor: (user: UserType) => (

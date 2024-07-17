@@ -18,6 +18,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
+import dayjs from "dayjs";
 import { Vertical } from "../MantineLayout";
 
 export const bindCheckboxToForm = (form: any, key: string) => {
@@ -41,7 +42,7 @@ export function SignUpForm(props: { toggle: () => void }) {
     <Vertical fullW fullH align="center" justify="center">
       <Paper radius="md" p={{ base: "lg", md: "xl" }} withBorder>
         <Text size="lg" fw={500} fz={{ base: rem(14), md: rem(19) }}>
-          Bienvenue sur l'application Gym
+          Bienvenue sur l'application Ketabi
         </Text>
 
         <Divider label="Inscrivez-vous avec votre email" labelPosition="center" my="lg" />
@@ -62,8 +63,25 @@ export function SignUpForm(props: { toggle: () => void }) {
               required
               {...form.getInputProps("birthdayDate")}
               clearable
+              defaultDate={dayjs().subtract(18, "year").toDate()}
               label="Date de naissance"
               placeholder="Entrée de la date"
+              radius="md"
+            />
+
+            <TextInput
+              required
+              {...form.getInputProps("address")}
+              label="Adresse"
+              placeholder="Entrée de l'adresse"
+              radius="md"
+            />
+
+            <TextInput
+              required
+              {...form.getInputProps("phoneNumber")}
+              label="Telephone"
+              placeholder="Entrée du telephone"
               radius="md"
             />
 

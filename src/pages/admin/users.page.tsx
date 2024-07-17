@@ -54,6 +54,8 @@ const UsersPage: BlitzPage = () => {
       ),
     },
     { header: "E-mail", accessor: "email" },
+    { header: "Address", accessor: "address" },
+    { header: "Telephone", accessor: "phoneNumber" },
     { header: "Âge", accessor: (user: UserType) => calculateAge(user.birthdayDate) },
     {
       header: "Genre",

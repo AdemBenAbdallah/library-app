@@ -25,6 +25,8 @@ export const InputSginUp = z.object({
   email,
   password,
   name: z.string(),
+  address: z.string(),
+  phoneNumber: z.string(),
   terms: z.boolean().refine((val) => val === true),
   birthdayDate: date(),
   gender: z.nativeEnum(GenderType),

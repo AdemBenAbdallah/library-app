@@ -9,7 +9,7 @@ import { InputSginUp } from "../schemas";
 export default resolver.pipe(
   resolver.zod(InputSginUp.omit({ terms: true })),
   resolver.authorize("ADMIN"),
-  async ({ name, email, password, gender, birthdayDate }) => {
+  async ({ name, email, password, gender, birthdayDate, address, phoneNumber }) => {
     const hashedPassword = await SecurePassword.hash(password.trim());
 
     const user = await db.user.create({
@@ -18,6 +18,8 @@ export default resolver.pipe(
         email: email.toLowerCase().trim(),
         hashedPassword,
         gender,
+        address,
+        phoneNumber,
         birthdayDate,
         role: "LIVREUR",
         onboarded: false,

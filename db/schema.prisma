@@ -20,6 +20,7 @@ model User {
   role                   RoleType   @default(USER)
   emailVerification      DateTime?
   address                String     @default("")
+  phoneNumber            String     @default("")
   birthdayDate           DateTime
   gender                 GenderType
   avatarImageKey         String?

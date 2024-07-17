@@ -21,7 +21,7 @@ export function LoginForm(props: { toggle: () => void }) {
     <Vertical align="center" justify="center">
       <Paper radius="md" p={{ base: "lg", md: "xl" }} maw={400} withBorder>
         <Text size="lg" fw={500} fz={{ base: rem(14), md: rem(19) }}>
-          Bienvenue sur l'application Gym{" "}
+          Bienvenue sur l'application Ketabi{" "}
         </Text>
 
         <Divider label="Connectez-vous avec votre email" labelPosition="center" my="lg" />

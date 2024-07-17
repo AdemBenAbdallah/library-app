@@ -8,13 +8,15 @@ import { InputSginUp } from "../schemas";
 
 export default resolver.pipe(
   resolver.zod(InputSginUp),
-  async ({ name, email, password, gender, birthdayDate }, ctx) => {
+  async ({ name, email, password, gender, birthdayDate, address, phoneNumber }, ctx) => {
     const hashedPassword = await SecurePassword.hash(password.trim());
     const user = await db.user.create({
       data: {
         name,
         email: email.toLowerCase().trim(),
         hashedPassword,
+        address,
+        phoneNumber,
         gender,
         birthdayDate,
         role: "USER",
