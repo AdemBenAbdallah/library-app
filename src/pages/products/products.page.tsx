@@ -1,3 +1,4 @@
+import FullPageLoader from "@/core/components/FulllPageLoader";
 import { ImageCard } from "@/core/components/ImageCard";
 import { InputWithButton } from "@/core/components/InputWithButton";
 import NotFound from "@/core/components/NotFound";
@@ -10,29 +11,13 @@ import { Button, Group, Modal, Radio, RangeSlider, SimpleGrid, Stack, Text, Them
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { BookCategory } from "@prisma/client";
 import { IconAdjustmentsAlt } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 
 const ProductsPage: BlitzPage = () => {
   const [search, setSearch] = useDebouncedState("", 200);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState<[number, number]>();
   const [opened, { open, close }] = useDisclosure();
-
-  const [productPage, { isFetchingNextPage, fetchNextPage, hasNextPage }] = useInfiniteQuery(
-    getProducts,
-    (page = { take: 10, skip: 0 }) => ({
-      ...page,
-      where: {
-        title: { contains: search, mode: "insensitive" },
-        category: categoryFilter ? { equals: categoryFilter } : undefined,
-        price: priceFilter ? { gte: priceFilter[0], lte: priceFilter[1] } : undefined,
-      },
-    }),
-    {
-      getNextPageParam: (lastPage) => lastPage.nextPage,
-    },
-  );
-  const hasBlogs = productPage.some((page) => page.products.length > 0);
 
   return (
     <Layout title="Products">
@@ -62,31 +47,9 @@ const ProductsPage: BlitzPage = () => {
               <IconAdjustmentsAlt />
             </ThemeIcon>
           </Group>
-          {hasBlogs && (
-            <SimpleGrid
-              cols={{ base: 1, sm: 2, lg: 5 }}
-              spacing={{ base: 10, sm: "xl" }}
-              verticalSpacing={{ base: "md", sm: "xl" }}
-            >
-              {productPage.map((page, i) => (
-                <React.Fragment key={i}>
-                  {page.products.map((product) => (
-                    <ImageCard key={product.id} product={product} />
-                  ))}
-                </React.Fragment>
-              ))}
-            </SimpleGrid>
-          )}
-          {!hasBlogs && <NotFound text="Aucun blog trouvé." />}
-          {hasNextPage && (
-            <Stack>
-              <div>
-                <Button onClick={() => fetchNextPage()} disabled={!hasNextPage || !!isFetchingNextPage}>
-                  {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
-                </Button>
-              </div>
-            </Stack>
-          )}
+          <Suspense fallback={<FullPageLoader />}>
+            <DisplayData categoryFilter={categoryFilter} priceFilter={priceFilter} search={search} />
+          </Suspense>
         </Stack>
       </Group>
       <Modal opened={opened} onClose={close} centered size={"sm"}>
@@ -98,6 +61,62 @@ const ProductsPage: BlitzPage = () => {
         />
       </Modal>
     </Layout>
+  );
+};
+
+const DisplayData = ({
+  categoryFilter,
+  priceFilter,
+  search,
+}: {
+  categoryFilter: string;
+  priceFilter: [number, number] | undefined;
+  search: string;
+}) => {
+  const [productPage, { isFetchingNextPage, fetchNextPage, hasNextPage }] = useInfiniteQuery(
+    getProducts,
+    (page = { take: 10, skip: 0 }) => ({
+      ...page,
+      where: {
+        title: { contains: search, mode: "insensitive" },
+        category: categoryFilter ? { equals: categoryFilter } : undefined,
+        price: priceFilter ? { gte: priceFilter[0], lte: priceFilter[1] } : undefined,
+      },
+    }),
+    {
+      getNextPageParam: (lastPage) => lastPage.nextPage,
+    },
+  );
+  const hasBlogs = productPage.some((page) => page.products.length > 0);
+
+  return (
+    <>
+      {hasBlogs && (
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, lg: 5 }}
+          spacing={{ base: 10, sm: "xl" }}
+          verticalSpacing={{ base: "md", sm: "xl" }}
+        >
+          {productPage.map((page, i) => (
+            <React.Fragment key={i}>
+              {page.products.map((product) => (
+                <ImageCard key={product.id} product={product} />
+              ))}
+            </React.Fragment>
+          ))}
+        </SimpleGrid>
+      )}
+      {!hasBlogs && <NotFound text="Aucun blog trouvé." />}
+      {hasNextPage && (
+        <Stack>
+          <div>
+            <Button onClick={() => fetchNextPage()} disabled={!hasNextPage || !!isFetchingNextPage}>
+              {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
+            </Button>
+          </div>
+        </Stack>
+      )}
+    </>
   );
 };
 

@@ -1,12 +1,10 @@
-import React from "react";
-import { Vertical } from "./MantineLayout";
-import { Loader } from "@mantine/core";
+import { Center, Loader } from "@mantine/core";
 
 const FullPageLoader = () => {
   return (
-    <Vertical fullH fullW align="center" justify="center">
+    <Center w={"100%"} h="100%">
       <Loader />
-    </Vertical>
+    </Center>
   );
 };
 

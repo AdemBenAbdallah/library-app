@@ -10,6 +10,7 @@ import { BlitzPage, Routes } from "@blitzjs/next";
 import { useMutation, useQuery } from "@blitzjs/rpc";
 import { Button, Group, Image, NumberInput, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { IconArrowLeft } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -56,73 +57,78 @@ const ProductDetails: BlitzPage = () => {
   };
   return (
     <Layout title="Product Details">
-      <Stack gap={100} pb={200}>
-        <Group w={{ base: "100%", md: 1200 }} mt={20} mx={"auto"} align="start" gap={50} wrap="wrap">
-          <Stack flex={1} bg={"red"} style={{ borderRadius: 10 }}>
-            <Image
-              miw={300}
-              mah={500}
-              src={getUploadThingUrl(product?.productImageKey)}
-              w={"100%"}
-              h={"100%"}
-              style={{ borderRadius: 10 }}
-            />
-          </Stack>
-          <Stack flex={1} justify="space-between" h={{ base: "auto", md: "100%" }}>
-            <Stack gap={0}>
-              <Title>{product?.title}</Title>
-              <Text span c={"brandy"} fz={"sm"}>
-                {product?.author}
-              </Text>
+      <Stack>
+        <Button variant="outline" leftSection={<IconArrowLeft />} onClick={() => router.back()}>
+          Back
+        </Button>
+        <Stack gap={100} pb={200}>
+          <Group w={{ base: "100%", md: 1200 }} mt={20} mx={"auto"} align="start" gap={50} wrap="wrap">
+            <Stack flex={1} bg={"red"} style={{ borderRadius: 10 }}>
+              <Image
+                miw={300}
+                mah={500}
+                src={getUploadThingUrl(product?.productImageKey)}
+                w={"100%"}
+                h={"100%"}
+                style={{ borderRadius: 10 }}
+              />
             </Stack>
-            <Group gap={6}>
-              <Text fw={500}> Description:</Text>
-              <Text c={"dimmed"} lineClamp={4}>
-                {product?.description}
-              </Text>
-            </Group>
-
-            <Stack gap={6}>
-              <Text fw={500}> Category:</Text>
-              <Group>
-                <Button variant={"outline"}>{categoryNameFormat(product?.category || "")}</Button>
-              </Group>
-            </Stack>
-
-            <Stack>
-              <Group>
-                <Text fw={500}>Prix:</Text>
-                <Text span c={"dimmed"} fz={"sm"}>
-                  {product?.price} DT
+            <Stack flex={1} justify="space-between" h={{ base: "auto", md: "100%" }}>
+              <Stack gap={0}>
+                <Title>{product?.title}</Title>
+                <Text span c={"brandy"} fz={"sm"}>
+                  {product?.author}
+                </Text>
+              </Stack>
+              <Group gap={6}>
+                <Text fw={500}> Description:</Text>
+                <Text c={"dimmed"} lineClamp={4}>
+                  {product?.description}
                 </Text>
               </Group>
 
-              <NumberInput
-                value={quantity}
-                onChange={(value) => setQuantity(value)}
-                w={100}
-                defaultValue={1}
-                min={1}
-                allowNegative={false}
-              />
-            </Stack>
+              <Stack gap={6}>
+                <Text fw={500}> Category:</Text>
+                <Group>
+                  <Button variant={"outline"}>{categoryNameFormat(product?.category || "")}</Button>
+                </Group>
+              </Stack>
 
-            <Button onClick={addProductToCart} bg={"black"} w={"100%"}>
-              Add to cart
-            </Button>
+              <Stack>
+                <Group>
+                  <Text fw={500}>Prix:</Text>
+                  <Text span c={"dimmed"} fz={"sm"}>
+                    {product?.price} DT
+                  </Text>
+                </Group>
+
+                <NumberInput
+                  value={quantity}
+                  onChange={(value) => setQuantity(value)}
+                  w={100}
+                  defaultValue={1}
+                  min={1}
+                  allowNegative={false}
+                />
+              </Stack>
+
+              <Button onClick={addProductToCart} bg={"black"} w={"100%"}>
+                Add to cart
+              </Button>
+            </Stack>
+          </Group>
+          <Stack px={{ base: 0, md: 20 }}>
+            <Text ml={"auto"} td="underline" c={"brandy"} component={Link} href={Routes.ProductsPage()} fw={500}>
+              see more
+            </Text>
+            <SimpleGrid
+              cols={{ base: 2, sm: 2, lg: 5 }}
+              spacing={{ base: 10, sm: "xl" }}
+              verticalSpacing={{ base: "md", sm: "xl" }}
+            >
+              {getProducts?.map((product, idx) => <ImageCard key={idx} product={product} />)}
+            </SimpleGrid>
           </Stack>
-        </Group>
-        <Stack px={{ base: 0, md: 20 }}>
-          <Text ml={"auto"} td="underline" c={"brandy"} component={Link} href={Routes.ProductsPage()} fw={500}>
-            see more
-          </Text>
-          <SimpleGrid
-            cols={{ base: 2, sm: 2, lg: 5 }}
-            spacing={{ base: 10, sm: "xl" }}
-            verticalSpacing={{ base: "md", sm: "xl" }}
-          >
-            {getProducts?.map((product, idx) => <ImageCard key={idx} product={product} />)}
-          </SimpleGrid>
         </Stack>
       </Stack>
     </Layout>
