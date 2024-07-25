@@ -6,8 +6,8 @@ export const RingLoader: MantineLoaderComponent = forwardRef(({ style, ...others
     {...others}
     ref={ref}
     style={{
-      width: "var(--loader-size)",
-      height: "var(--loader-size)",
+      width: "62px",
+      height: "62px",
       stroke: "var(--loader-color)",
       ...style,
     }}

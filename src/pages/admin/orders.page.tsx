@@ -1,4 +1,6 @@
+import FullPageLoader from "@/core/components/FulllPageLoader";
 import { InputWithButton } from "@/core/components/InputWithButton";
+import OrderDetails from "@/core/components/OrderDetils";
 import RenderTable, { Column } from "@/core/components/RenderTable";
 import UserAvatar from "@/core/components/UserAvatar";
 import DashLayout from "@/core/layouts/DashLayout";
@@ -9,14 +11,14 @@ import getLivreurByAdmin from "@/features/users/queries/getLivreurByAdmin";
 import { categoryNameFormat } from "@/utils/utils";
 import { BlitzPage } from "@blitzjs/next";
 import { useMutation, usePaginatedQuery, useQuery } from "@blitzjs/rpc";
-import { Badge, Button, ComboboxItem, Group, Modal, Select, Stack, Tooltip } from "@mantine/core";
+import { Badge, Button, ComboboxItem, Drawer, Group, Modal, Select, Stack, Tooltip } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { OrderStatus } from "@prisma/client";
-import { IconEdit, IconSquareRoundedPlusFilled } from "@tabler/icons-react";
+import { IconEdit, IconEye, IconPlus } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 const ITEMS_PER_PAGE = 10;
 export const statusColor = (status: OrderStatus) => {
@@ -38,6 +40,7 @@ const AdminOrders: BlitzPage = () => {
   const [statusFilter, setStatusFilter] = useState<OrderStatus | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [openedAssign, { open: openAssign, close: closeAssign }] = useDisclosure(false);
+  const [openedOrderDetails, { open: openOrderDetails, close: closeOrderDetails }] = useDisclosure(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [selected, setSelected] = useState<ComboboxItem | null>(null);
   const [livreurs, { isLoading: isLoadingLivreurs }] = useQuery(getLivreurByAdmin, { search: "" });
@@ -94,6 +97,15 @@ const AdminOrders: BlitzPage = () => {
           >
             <IconEdit stroke={1} style={{ cursor: "pointer" }} size={25} />
           </Group>
+          <IconEye
+            onClick={() => {
+              setSelectedOrderId(order.id);
+              openOrderDetails();
+            }}
+            stroke={1}
+            style={{ cursor: "pointer" }}
+            size={25}
+          />
           <Tooltip
             onClick={() => {
               setSelectedOrderId(order.id);
@@ -101,7 +113,7 @@ const AdminOrders: BlitzPage = () => {
             }}
             label="Assign to livreur"
           >
-            <IconSquareRoundedPlusFilled style={{ cursor: "pointer" }} size={25} />
+            <IconPlus style={{ cursor: "pointer" }} stroke={1} size={25} />
           </Tooltip>
         </Group>
       ),
@@ -173,6 +185,11 @@ const AdminOrders: BlitzPage = () => {
           </Group>
         </Stack>
       </Modal>
+      <Drawer opened={openedOrderDetails} onClose={closeOrderDetails}>
+        <Suspense fallback={<FullPageLoader />}>
+          <OrderDetails orderId={selectedOrderId} />
+        </Suspense>
+      </Drawer>
     </DashLayout>
   );
 };
